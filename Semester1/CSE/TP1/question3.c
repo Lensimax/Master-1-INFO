@@ -13,7 +13,7 @@ int main(int argc, char **argv){
 
 		switch(fork()){
 			case 0: 
-				printf("processus pid %ld node %d val = %d\n", getpid(), i, random());
+				printf("processus pid %d node %i val = %li\n", getpid(), i, random());
 				break;
 			case -1:
 				perror(NULL);

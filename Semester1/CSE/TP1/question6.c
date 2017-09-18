@@ -15,13 +15,13 @@ int main(int argc, char **argv){
 
 	int i;
 
-	int n;
+	// int n;
 
-	pid_t initial_proc = getpid();
+	// pid_t initial_proc = getpid();
 
 	int tube[2];
 
-	char buf[NMAX];
+	// char buf[NMAX];
 	char msg[] = "bonjour";
 
 
@@ -40,7 +40,8 @@ int main(int argc, char **argv){
 			case 0: // fils
 				close(tube[1]);
 
-				n = read(tube[0], msg, strlen(msg));
+				read(tube[0], msg, strlen(msg));
+
 
 
 				printf("FILS: message recu %s pid %d\n", msg, getpid());

@@ -5,6 +5,8 @@
 struct fb;
 
 void mem_init(char* mem, size_t taille);
+
+
 void* mem_alloc(size_t);
 void mem_free(void*);
 size_t mem_get_size(void *);

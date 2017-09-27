@@ -41,10 +41,17 @@ void* mem_alloc(size_t size_block){
 	}
 
 	// TODO !!!  faire des multiples de fb 
+	// int nb_block_fp = (size_block / sizeof(struct fb)) + 1;
+	// void *adr_retour = (void *)(adr + adr->size - nb_block_fp;
 	void * adr_retour = (void *)(adr + adr->size - size_block); // valeur renvoyer par malloc
+	
+	// adr->size = adr->size - nb_block_fp - sizeof(size_t);
 	adr->size = adr->size - size_block - sizeof(size_t);
 
 	// affectation de la taille dans le block d'avant
+	// je sais pas si ça marche
+	// void * adr_size = ((size_t) adr_retour) - 1;
+	// (size_t) adr_size = nb_block_fp;
 	// *((size_t) adr_retour - 1) = size_block;
 
 	return adr_retour;

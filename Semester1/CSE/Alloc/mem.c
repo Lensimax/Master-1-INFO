@@ -27,6 +27,7 @@ void mem_init(char* mem, size_t taille){
 	head->next = NULL;
 
 	mem_fit(mem_fit_first); // a changer selon la fonction de "fit"
+
 }
 
 
@@ -40,24 +41,32 @@ void* mem_alloc(size_t size_block){
 		return NULL;
 	}
 
-	// TODO !!!  faire des multiples de fb 
-	// int nb_block_fp = (size_block / sizeof(struct fb)) + 1;
-	// void *adr_retour = (void *)(adr + adr->size - nb_block_fp;
-	void * adr_retour = (void *)(adr + adr->size - size_block); // valeur renvoyer par malloc
+	int nb_block_fp = (size_block / sizeof(struct fb)) + 1;
+	size_t taille_bloc = nb_block_fp * sizeof(struct fb);
+	void *adr_retour = (void *)(adr + adr->size - taille_bloc); // valeur renvoyer par malloc
 	
-	// adr->size = adr->size - nb_block_fp - sizeof(size_t);
-	adr->size = adr->size - size_block - sizeof(size_t);
+	adr->size = adr->size - taille_bloc - sizeof(size_t);
 
 	// affectation de la taille dans le block d'avant
-	// je sais pas si ça marche
-	// void * adr_size = ((size_t) adr_retour) - 1;
-	// (size_t) adr_size = nb_block_fp;
+	void *adr_size = (size_t *) adr_retour - 1;
+	(*(size_t *) adr_size) = taille_bloc;
+	// size_t *ptr_size;
+	// ptr_size = adr_size;
+	// *ptr_size = taille_bloc;
 	// *((size_t) adr_retour - 1) = size_block;
 
 	return adr_retour;
 }
 
 
+void mem_free(void *adr_to_free){
+
+}
+
+
+void mem_show(void (*print)(void *adr, size_t size, int free)){
+
+}
 
 
 // renvoie la taille du block alloué a l'adresse adr
@@ -79,13 +88,14 @@ struct fb* mem_fit_first(struct fb *f, size_t size_block){
 
 	struct fb *ptr = f;
 
+	int nb_block_fp = (size_block / sizeof(struct fb));
+	size_t taille_bloc = nb_block_fp * sizeof(struct fb);
 
-	while(ptr != NULL && ptr->size > size_block + sizeof(size_t)){ 
+	while(ptr != NULL && ptr->size < taille_bloc + sizeof(size_t)){ 
 		ptr = ptr->next;
 	}
 
 	if(ptr == NULL){
-		printf("Pas de block trouvé\n");
 		return NULL;
 	} else {
 		return ptr;

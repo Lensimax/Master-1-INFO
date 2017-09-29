@@ -43,29 +43,93 @@ void* mem_alloc(size_t size_block){
 
 	int nb_block_fp = (size_block / sizeof(struct fb)) + 1;
 	size_t taille_bloc = nb_block_fp * sizeof(struct fb);
-	void *adr_retour = (void *)(adr + adr->size - taille_bloc); // valeur renvoyer par malloc
+
+	void *adr_retour = (void *) adr + adr->size - taille_bloc;
+
+	// void *adr_retour = (void *)(adr + adr->size - taille_bloc); // valeur renvoyer par malloc
 	
 	adr->size = adr->size - taille_bloc - sizeof(size_t);
 
 	// affectation de la taille dans le block d'avant
 	void *adr_size = (size_t *) adr_retour - 1;
-	(*(size_t *) adr_size) = taille_bloc;
-	// size_t *ptr_size;
-	// ptr_size = adr_size;
-	// *ptr_size = taille_bloc;
-	// *((size_t) adr_retour - 1) = size_block;
+	*(size_t *) adr_size = taille_bloc;
+
+	// TODO cas ou on alloue tous le bloc libre
+	// il faut garder le pointeur vers le nouveau bloc libre
 
 	return adr_retour;
 }
 
+/*struct fb* recherche_file_adr(void *adr){
+	struct fb *ptr = head;
+
+
+}*/
+
 
 void mem_free(void *adr_to_free){
+
+	// TODO vérifier si adr_to_free entre la borne inf et sup
+
+	void * adr_size = (size_t *) adr_to_free - 1;
+	size_t size_free = *(size_t *) adr_size;
+
+	// on recherche les endroits où il faut ajouter
+
+	struct fb *ptr = head;
+	struct fb *suiv = head;
+
+	if(ptr != NULL){
+		suiv = ptr->next;
+	}
+
+	// parcours de la liste chainée
+	while(suiv != NULL && (void *) suiv > adr_to_free){
+		ptr = suiv;
+		suiv = suiv->next;
+	}
+
+	// on ajoute entre ptr et suiv
+	struct fb *ptr_debut;
+
+	// on crée notre fb
+	struct fb zone_free;
+	zone_free.size = size_free;
+	zone_free.next = suiv;
+
+	// on la stocke 
+	*(struct fb *) adr_size = zone_free;
+
+	// on chaine
+	ptr_debut = adr_size;
+	ptr->next = ptr_debut;
+
+
+	if((long int) ptr + (long int) ptr->size == (long int) adr_size){ // la zone a libérée est adjacente a la zone libre précédente
+		printf("fusion précédente");
+		ptr_debut = ptr;
+		ptr_debut->size = ptr_debut->size + size_free + sizeof(size_t); // on augmente la taille de la zone libre d'avant
+		ptr->next = suiv;
+	}
+
+	if(suiv != NULL && (long int)adr_to_free + (long int)size_free == (long int) suiv - (long int)sizeof(size_t)){ // la zone a libere est adjacente a la zone libre suivante
+		printf("fusion suivante");
+		ptr_debut->size = ptr_debut->size + suiv->size + sizeof(size_t);
+		ptr_debut->next = suiv->next;
+	}
+
 
 }
 
 
 void mem_show(void (*print)(void *adr, size_t size, int free)){
 
+	struct fb *ptr = head;
+
+	while(ptr != NULL){
+		print(ptr, ptr->size, 1);
+		ptr = ptr->next;
+	}
 }
 
 

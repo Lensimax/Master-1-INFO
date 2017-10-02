@@ -104,6 +104,7 @@ void mem_free(void *adr_to_free){
 	ptr_debut = adr_size;
 	ptr->next = ptr_debut;
 
+	// conditions pas bonne
 
 	if((long int) ptr + (long int) ptr->size == (long int) adr_size){ // la zone a libérée est adjacente a la zone libre précédente
 		printf("fusion précédente");

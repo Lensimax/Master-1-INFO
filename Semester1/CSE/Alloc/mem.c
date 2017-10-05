@@ -83,11 +83,18 @@ void mem_free(void *adr_to_free){
 		suiv = ptr->next;
 	}
 
+	// TODO boucle a faire attention
+
 	// parcours de la liste chainée
-	while(suiv != NULL && (void *) suiv > adr_to_free){
+	while(suiv != NULL && (void *) suiv < (void *) adr_to_free){
+		printf("[BOUCLE] passe\n");
 		ptr = suiv;
 		suiv = suiv->next;
 	}
+
+	// sortie de la boucle de recherche d'emplacement
+	printf("ptr %p et size %lu\n", ptr, ptr?ptr->size:0);
+	printf("suiv %p et size %lu\n", suiv, suiv?suiv->size:0);
 
 	// on ajoute entre ptr et suiv
 	struct fb *ptr_debut;
@@ -97,6 +104,8 @@ void mem_free(void *adr_to_free){
 	zone_free.size = size_free;
 	zone_free.next = suiv;
 
+	printf("size free: %lu\n", zone_free.size);
+
 	// on la stocke 
 	*(struct fb *) adr_size = zone_free;
 
@@ -104,19 +113,36 @@ void mem_free(void *adr_to_free){
 	ptr_debut = adr_size;
 	ptr->next = ptr_debut;
 
-	// conditions pas bonne
 
-	if((long int) ptr + (long int) ptr->size == (long int) adr_size){ // la zone a libérée est adjacente a la zone libre précédente
-		printf("fusion précédente");
+	if(DEBUG){
+		printf("\n");
+
+		if(ptr != NULL){
+			printf("P1: %p size %lu\n", ptr, ptr->size);
+		}
+		if(suiv != NULL){
+			printf("P2: %p size %lu\n", suiv, suiv->size);
+		}
+
+		printf("adresse fin de zone précédente\t\t%p\t%p\t%lu\n", ptr + ptr->size, ptr, ptr->size); // pk sa marche pa ??????
+		printf("adresse la où l'on veut liberer\t\t%p\n", adr_size);
+		printf("adresse fin de zone a liberer\t\t%p\n", adr_to_free + size_free);
+		printf("adresse debut zone suivante\t\t%p\n\n", suiv);
+	}
+
+
+	if(suiv != NULL && (char *)ptr_debut + size_free == (char *) suiv - sizeof(size_t)){ // la zone a libere est adjacente a la zone libre suivante
+		printf("fusion suivante\n");
+		ptr_debut->size = ptr_debut->size + suiv->size + sizeof(size_t);
+		ptr_debut->next = suiv->next;
+	}
+
+
+	if((char *) ptr + ptr->size == (char *) ptr_debut){ // la zone a libérée est adjacente a la zone libre précédente
+		printf("fusion précédente\n");
 		ptr_debut = ptr;
 		ptr_debut->size = ptr_debut->size + size_free + sizeof(size_t); // on augmente la taille de la zone libre d'avant
 		ptr->next = suiv;
-	}
-
-	if(suiv != NULL && (long int)adr_to_free + (long int)size_free == (long int) suiv - (long int)sizeof(size_t)){ // la zone a libere est adjacente a la zone libre suivante
-		printf("fusion suivante");
-		ptr_debut->size = ptr_debut->size + suiv->size + sizeof(size_t);
-		ptr_debut->next = suiv->next;
 	}
 
 

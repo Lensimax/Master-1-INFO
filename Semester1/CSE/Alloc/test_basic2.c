@@ -29,31 +29,22 @@ int main(int argc, char *argv[]) {
 	void * ptr1 = alloc(sizeof(int) * 10);
 	void * ptr2 = alloc(sizeof(int) * 10);
 	void * ptr3 = alloc(sizeof(int) * 10);
-	void * ptr4 = alloc(sizeof(int) * 10);
 
 	printf("\nPtr1 %p et debut de la zone %p\n", ptr1, ptr1 - sizeof(size_t));
 	printf("Ptr2 %p et debut de la zone %p\n", ptr2, ptr2 - sizeof(size_t));
 	printf("Ptr3 %p et debut de la zone %p\n\n", ptr3, ptr3 - sizeof(size_t));
-	printf("Ptr4 %p et debut de la zone %p\n\n", ptr4, ptr4 - sizeof(size_t));
 
 	mem_show(&afficher_zone);
 
 	printf("\nFree ptr2 %p\n", ptr2);
-	mem_free(ptr1);
-	mem_show(&afficher_zone);
-
-	printf("\nFree ptr1 %p\n", ptr1);
 	mem_free(ptr2);
 	mem_show(&afficher_zone);
 
-	printf("\nFree ptr3 %p\n", ptr3);
-	mem_free(ptr3);
+	
+	printf("\nFree ptr1 %p\n", ptr1);
+	mem_free(ptr1);
 	mem_show(&afficher_zone);
 
-	printf("\nFree ptr4 %p\n", ptr4);
-	mem_free(ptr4);
-	mem_show(&afficher_zone);
-
-
+	
 	return 0;
 }

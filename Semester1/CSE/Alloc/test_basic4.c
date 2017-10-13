@@ -38,20 +38,20 @@ int main(int argc, char *argv[]) {
 
 	mem_show(&afficher_zone);
 
-	printf("\nFree ptr2 %p\n", ptr2);
-	mem_free(ptr1);
-	mem_show(&afficher_zone);
-
-	printf("\nFree ptr1 %p\n", ptr1);
-	mem_free(ptr2);
+	printf("\nFree ptr4 %p\n", ptr4);
+	mem_free(ptr4);
 	mem_show(&afficher_zone);
 
 	printf("\nFree ptr3 %p\n", ptr3);
 	mem_free(ptr3);
 	mem_show(&afficher_zone);
 
-	printf("\nFree ptr4 %p\n", ptr4);
-	mem_free(ptr4);
+	printf("\nFree ptr2 %p\n", ptr2);
+	mem_free(ptr2);
+	mem_show(&afficher_zone);
+
+	printf("\nFree ptr1 %p\n", ptr1);
+	mem_free(ptr1);
 	mem_show(&afficher_zone);
 
 

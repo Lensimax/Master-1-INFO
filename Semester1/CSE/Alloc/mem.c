@@ -1,5 +1,6 @@
 #include "mem.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 struct fb {
 	size_t size;
@@ -44,7 +45,7 @@ void* mem_alloc(size_t size_block){
 	int nb_block_fp = (size_block / sizeof(struct fb)) + 1;
 	size_t taille_bloc = nb_block_fp * sizeof(struct fb);
 
-	void *adr_retour = (void *) adr + adr->size - taille_bloc;
+	void *adr_retour = (char *) adr + adr->size - taille_bloc;
 
 	// void *adr_retour = (void *)(adr + adr->size - taille_bloc); // valeur renvoyer par malloc
 	
@@ -69,7 +70,10 @@ void* mem_alloc(size_t size_block){
 
 void mem_free(void *adr_to_free){
 
-	// TODO vérifier si adr_to_free entre la borne inf et sup
+	if(adr_to_free > borne_sup || adr_to_free < borne_inf){
+		fprintf(stderr, "Free en dehors des bornes (SEGFAULT)\n");
+		exit(1);
+	}
 
 	void * adr_size = (size_t *) adr_to_free - 1;
 	size_t size_free = *(size_t *) adr_size;
@@ -83,25 +87,22 @@ void mem_free(void *adr_to_free){
 		suiv = ptr->next;
 	}
 
-	// TODO boucle a faire attention
 
 	// parcours de la liste chainée
-	while(suiv != NULL && (void *) suiv < (void *) adr_to_free){
+	while(suiv != NULL && (char *) suiv < (char *) adr_to_free){
 		printf("[BOUCLE] passe\n");
 		ptr = suiv;
 		suiv = suiv->next;
 	}
 
 	// sortie de la boucle de recherche d'emplacement
-	printf("ptr %p et size %lu\n", ptr, ptr?ptr->size:0);
-	printf("suiv %p et size %lu\n", suiv, suiv?suiv->size:0);
 
 	// on ajoute entre ptr et suiv
 	struct fb *ptr_debut;
 
 	// on crée notre fb
 	struct fb zone_free;
-	zone_free.size = size_free;
+	zone_free.size = size_free + sizeof(size_t);
 	zone_free.next = suiv;
 
 	printf("size free: %lu\n", zone_free.size);
@@ -109,40 +110,23 @@ void mem_free(void *adr_to_free){
 	// on la stocke 
 	*(struct fb *) adr_size = zone_free;
 
-	// on chaine
+	// puis on chaine
 	ptr_debut = adr_size;
 	ptr->next = ptr_debut;
 
 
-	if(DEBUG){
-		printf("\n");
+	// fusion suivante
+	if(suiv != NULL && (char *)ptr_debut + ptr_debut->size == (char *) suiv){ // la zone a libere est adjacente a la zone libre suivante
 
-		if(ptr != NULL){
-			printf("P1: %p size %lu\n", ptr, ptr->size);
-		}
-		if(suiv != NULL){
-			printf("P2: %p size %lu\n", suiv, suiv->size);
-		}
-
-		printf("adresse fin de zone précédente\t\t%p\t%p\t%lu\n", ptr + ptr->size, ptr, ptr->size); // pk sa marche pa ??????
-		printf("adresse la où l'on veut liberer\t\t%p\n", adr_size);
-		printf("adresse fin de zone a liberer\t\t%p\n", adr_to_free + size_free);
-		printf("adresse debut zone suivante\t\t%p\n\n", suiv);
-	}
-
-
-	if(suiv != NULL && (char *)ptr_debut + size_free == (char *) suiv - sizeof(size_t)){ // la zone a libere est adjacente a la zone libre suivante
-		printf("fusion suivante\n");
-		ptr_debut->size = ptr_debut->size + suiv->size + sizeof(size_t);
+		ptr_debut->size = ptr_debut->size + suiv->size; // on augmente la taille de notre bloc courant
 		ptr_debut->next = suiv->next;
 	}
 
+	// fusion précédente
+	if((char *) ptr + ptr->size  == (char *) ptr_debut){ // la zone a libérée est adjacente a la zone libre précédente
 
-	if((char *) ptr + ptr->size == (char *) ptr_debut){ // la zone a libérée est adjacente a la zone libre précédente
-		printf("fusion précédente\n");
-		ptr_debut = ptr;
-		ptr_debut->size = ptr_debut->size + size_free + sizeof(size_t); // on augmente la taille de la zone libre d'avant
-		ptr->next = suiv;
+		ptr->size = ptr->size + ptr_debut->size; // on augmente la taille de la zone libre d'avant
+		ptr->next = ptr_debut->next; // on relie la zone d'avant avec la suite
 	}
 
 

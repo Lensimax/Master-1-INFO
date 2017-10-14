@@ -22,6 +22,7 @@ import grapher.fc.*;
 
 public class GrapherCanvas extends Canvas {
 
+
 	static final double MARGIN = 40;
 	static final double STEP = 5;
 
@@ -69,7 +70,7 @@ public class GrapherCanvas extends Canvas {
 		
 		// background
 		gc.clearRect(0, 0, W, H);
-		
+
 		gc.setFill(Color.BLACK);
 		gc.setStroke(Color.BLACK);
 
@@ -202,5 +203,17 @@ public class GrapherCanvas extends Canvas {
 		xmin = min(x0, x1); xmax = max(x0, x1);
 		ymin = min(y0, y1); ymax = max(y0, y1);
 		redraw();
+	}
+
+	public double getMARGIN() {
+		return MARGIN;
+	}
+
+	public double getWIDTH() {
+		return WIDTH;
+	}
+
+	public double getHEIGHT() {
+		return HEIGHT;
 	}
 }

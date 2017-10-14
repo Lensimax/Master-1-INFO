@@ -4,6 +4,9 @@ package grapher.ui;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
+
+import java.awt.*;
+
 import static javafx.scene.Cursor.CLOSED_HAND;
 import static javafx.scene.Cursor.DEFAULT;
 import static javafx.scene.Cursor.MOVE;
@@ -28,20 +31,25 @@ public class Handler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent mouseEvent) {
 
+
         switch(state){
 
             case IDLE:
 
 
                     switch(mouseEvent.getEventType().getName()){
-                        case "MOUSE_PRESSED":  // TODO a changer c'était du debug
-                            if(mouseEvent.isSecondaryButtonDown()){
-                                p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
-                                state = State.DRAG_OR_CLICK;
-                            } else if(mouseEvent.isPrimaryButtonDown()){
-                                p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
-                                state = State.RIGHT_CLICK_DRAG_OR_CLICK;
+                        case "MOUSE_PRESSED":
+                            if(isRight(mouseEvent)){
+
+                                if(mouseEvent.isPrimaryButtonDown()){
+                                    p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+                                    state = State.DRAG_OR_CLICK;
+                                } else if(mouseEvent.isSecondaryButtonDown()){
+                                    p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+                                    state = State.RIGHT_CLICK_DRAG_OR_CLICK;
+                                }
                             }
+
                             break;
 
                         default:
@@ -108,6 +116,11 @@ public class Handler implements EventHandler<MouseEvent> {
                         }
                         break;
 
+                    case "MOUSE_RELEASED":
+                        state = State.IDLE;
+                        this.canvas.zoom(p, -5);
+                        break;
+
                     default:
                         break;
                 }
@@ -128,6 +141,7 @@ public class Handler implements EventHandler<MouseEvent> {
                     case "MOUSE_RELEASED":
                         // zoom
                         this.canvas.redraw();
+                        this.canvas.zoom(p, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
                         state = State.IDLE;
                         break;
                 }
@@ -141,31 +155,16 @@ public class Handler implements EventHandler<MouseEvent> {
     }
 
     private void drawRectangleDashed(MouseEvent mouseEvent){
-        double top_x;
-        double top_y;
-        double width = p.getX() - mouseEvent.getX();
-        double heigth = p.getY() - mouseEvent.getY();
-
-        if(width > 0){
-            top_x = mouseEvent.getX();
-        } else {
-            top_x = p.getX();
-        }
-
-        if(heigth > 0){
-            top_y = mouseEvent.getY();
-        } else {
-            top_y = p.getY();
-        }
-
-        // TODO c'est pas bon A CORRIGER !!!!!!!!!!!!
-
-        System.out.println("p :"+p+" Top x: "+top_x+" Top y: "+top_y+" width: "+width+" heigth: "+heigth);
-
 
         this.canvas.getGraphicsContext2D().setLineDashes(new double[]{ 3.f, 3.f });
 
         //dessiner
+        // 4 lignes en pointillés
+
+        this.canvas.getGraphicsContext2D().strokeLine(p.getX(), p.getY(), mouseEvent.getX(), p.getY());
+        this.canvas.getGraphicsContext2D().strokeLine(p.getX(), p.getY(), p.getX(), mouseEvent.getY());
+        this.canvas.getGraphicsContext2D().strokeLine(mouseEvent.getX(), p.getY(), mouseEvent.getX(), mouseEvent.getY());
+        this.canvas.getGraphicsContext2D().strokeLine(mouseEvent.getX(), mouseEvent.getY(), p.getX(), mouseEvent.getY());
 
         this.canvas.getGraphicsContext2D().setLineDashes(null);
     }
@@ -178,5 +177,11 @@ public class Handler implements EventHandler<MouseEvent> {
         } else {
             return i;
         }
+    }
+
+    // le click est dans le repère gradué
+    private boolean isRight(MouseEvent e){
+        return e.getX() > canvas.getMARGIN() && e.getX() < canvas.getWIDTH() - canvas.getMARGIN() &&
+                e.getY() > canvas.getMARGIN() && e.getY() < canvas.getHEIGHT() - canvas.getMARGIN();
     }
 }

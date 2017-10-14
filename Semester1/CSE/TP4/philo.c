@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#define TAILLE_RIZ 50
+#define TAILLE_RIZ 20
 #define BOUCHEE 10
 
 int nb_philosophe;
@@ -13,6 +13,7 @@ int *baguette_dispo; // tableau boolean
 int *bol_riz;
 pthread_cond_t *cond_tab;
 pthread_t *tids;
+int *index_tab;
 
 void synchro(int i){
 
@@ -20,7 +21,7 @@ void synchro(int i){
 
 	while(!baguette_dispo[i] || !baguette_dispo[(i+1)%nb_philosophe]){
 		pthread_cond_wait(&cond_tab[i], &m);
-		printf("[philosphe %d]: notifié\n", i);
+		// printf("[philosphe %d]: notifié\n", i);
 	}
 
 	baguette_dispo[i] = 0;
@@ -37,8 +38,8 @@ void fin_synchro(int i){
 	baguette_dispo[i] = 1;
 	baguette_dispo[(i+1)%nb_philosophe] = 1;
 
-	printf("[philosphe %d] précédent %d\n", i, (i-1+nb_philosophe)%nb_philosophe);
-	printf("[philosphe %d] suivant %d\n", i,(i+1)%nb_philosophe);
+	// printf("[philosphe %d] précédent %d\n", i, (i-1+nb_philosophe)%nb_philosophe);
+	// printf("[philosphe %d] suivant %d\n", i,(i+1)%nb_philosophe);
 
 	pthread_cond_signal(&cond_tab[(i-1+nb_philosophe)%nb_philosophe]);
 	pthread_cond_signal(&cond_tab[(i+1)%nb_philosophe]);
@@ -94,6 +95,7 @@ int main(int argc, char **argv){
 	bol_riz = malloc(sizeof(int) * nb_philosophe);
 	cond_tab = malloc(sizeof(pthread_cond_t) * nb_philosophe);
 	tids = malloc(sizeof(pthread_t) * nb_philosophe);
+	index_tab = malloc(sizeof(int) * nb_philosophe);
 
 	// init tab
 
@@ -103,11 +105,12 @@ int main(int argc, char **argv){
 		baguette_dispo[i] = 1; // true
 		bol_riz[i] = TAILLE_RIZ;
 		pthread_cond_init(&cond_tab[i], NULL);
+		index_tab[i] = i;
 
 	}
 
 	for(i=0; i<nb_philosophe; i++){
-		pthread_create(&tids[i], NULL, philosphe, &i);
+		pthread_create(&tids[i], NULL, philosphe, &index_tab[i]);
 	}
 
 
@@ -121,6 +124,7 @@ int main(int argc, char **argv){
 	free(bol_riz);
 	free(cond_tab);
 	free(tids);
+	free(index_tab);
 
 
 	exit(0);

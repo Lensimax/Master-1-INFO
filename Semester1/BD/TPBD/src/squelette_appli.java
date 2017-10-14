@@ -5,8 +5,7 @@ public class squelette_appli {
 	
 	static final String CONN_URL = "jdbc:oracle:thin:@im2ag-oracle.e.ujf-grenoble.fr:1521:im2ag";
 	
-	static final String USER = "isnelm";
-	static final String PASSWD = "Maxime26";
+
 
 	static Connection conn; 
 	
@@ -22,7 +21,8 @@ public class squelette_appli {
 
             // Etablissement de la connection
             System.out.print("Connecting to the database... ");
-            conn = DriverManager.getConnection(CONN_URL,USER,PASSWD);
+            // faire un fichier avec les logs en static
+            conn = DriverManager.getConnection(CONN_URL,Log.USER,Log.PASSWD);
             System.out.println("connected");
 
             // Desactivation de l'autocommit

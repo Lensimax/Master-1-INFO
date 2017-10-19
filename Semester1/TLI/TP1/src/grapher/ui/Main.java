@@ -2,12 +2,15 @@ package grapher.ui;
 
 import grapher.fc.FunctionFactory;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.Scene;
@@ -27,13 +30,26 @@ public class Main extends Application {
 		list_function.setStyle("-fx-alignment: center; -fx-background-color: white;");
         list_function.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        list_function.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                //TODO changement de l'ecriture
+            }
+        });
+
+
         for(String param: getParameters().getRaw()) { // ajout des fonctions en parametre)
             list_function.getItems().add(new Text(param));
         }
 
+        Font font;
+
         for(Text func: list_function.getSelectionModel().getSelectedItems()){
             // TODO changer le text en BOLD
-//            func.setFont(Font.BOLD);
+            font = func.getFont();
+
+            func.setFont(Font.font(font.getName(), FontWeight.BOLD, font.getSize()));
+
         }
 
 

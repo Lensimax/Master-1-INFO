@@ -5,9 +5,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 
-import java.awt.*;
-
-import static javafx.scene.Cursor.CLOSED_HAND;
 import static javafx.scene.Cursor.DEFAULT;
 import static javafx.scene.Cursor.MOVE;
 
@@ -19,7 +16,7 @@ public class Handler implements EventHandler<MouseEvent> {
 
     public static final int D_DRAG = 5;
 
-    enum State {IDLE,RIGHT_CLICK_DRAG_OR_CLICK, SELECT_ZOOM, DRAG_OR_CLICK, DRAG}
+    enum State {IDLE,RIGHT_CLICK_DRAG_OR_CLICK, SELECT_ZOOM, DRAG_OR_CLICK, WHEEL_ZOOM, DRAG, MIDDLE_DRAG_OR_CLICK}
 
     State state = State.IDLE;
 
@@ -47,6 +44,9 @@ public class Handler implements EventHandler<MouseEvent> {
                                 } else if(mouseEvent.isSecondaryButtonDown()){
                                     p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
                                     state = State.RIGHT_CLICK_DRAG_OR_CLICK;
+                                } else if(mouseEvent.isMiddleButtonDown()){
+                                    p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+                                    state = State.MIDDLE_DRAG_OR_CLICK;
                                 }
                             }
 
@@ -112,7 +112,6 @@ public class Handler implements EventHandler<MouseEvent> {
                         if(p.distance(mouseEvent.getX(), mouseEvent.getY()) > D_DRAG){
                             state = State.SELECT_ZOOM;
 
-                            this.drawRectangleDashed(mouseEvent);
                         }
                         break;
 
@@ -146,6 +145,51 @@ public class Handler implements EventHandler<MouseEvent> {
                         break;
                 }
 
+                break;
+
+            case MIDDLE_DRAG_OR_CLICK:
+
+                switch(mouseEvent.getEventType().getName()){
+                    case "MOUSE_DRAGGED":
+                        if(p.distance(mouseEvent.getX(), mouseEvent.getY()) > D_DRAG){
+                            state = State.WHEEL_ZOOM;
+                        }
+                        break;
+
+                    case "MOUSE_RELEASED":
+
+                        state = State.IDLE;
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+                break;
+
+            case WHEEL_ZOOM:
+                switch(mouseEvent.getEventType().getName()){
+                    case "MOUSE_DRAGGED":
+
+                        // zoom quand on monte, dezoom quand on descend
+
+                        if(mouseEvent.getY() > p.getY()){
+                            // dezoom
+                            this.canvas.zoom(p, -5);
+                        } else {
+                            // zoom
+                            this.canvas.zoom(p, 5);
+                        }
+
+                        state = State.WHEEL_ZOOM;
+                        break;
+
+
+                    case "MOUSE_RELEASED":
+                        state = State.IDLE;
+                        break;
+                }
                 break;
 
             default:

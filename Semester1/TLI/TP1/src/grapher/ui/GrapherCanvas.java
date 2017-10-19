@@ -5,6 +5,7 @@ import static java.lang.Math.*;
 import java.util.Vector;
 
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.util.converter.DoubleStringConverter;
 
 import javafx.application.Application.Parameters;
@@ -43,12 +44,13 @@ public class GrapherCanvas extends Canvas {
 		super(WIDTH, HEIGHT);
 		xmin = -PI/2.; xmax = 3*PI/2;
 		ymin = -1.5;   ymax = 1.5;
-		
 		for(String param: params.getRaw()) {
+
 			functions.add(FunctionFactory.createFunction(param));
 		}
 
         this.addEventHandler(MouseEvent.ANY, new Handler(this));
+		this.addEventHandler(ScrollEvent.ANY, new ScrollerHandler(this));
 	}
 	
 	public double minHeight(double width)  { return HEIGHT;}

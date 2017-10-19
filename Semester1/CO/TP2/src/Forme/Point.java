@@ -1,3 +1,5 @@
+package Forme;
+
 public class Point {
 
     private double x,y;
@@ -15,4 +17,9 @@ public class Point {
         return this.y;
     }
 
+    public String toString(){
+        String renvoi = "";
+        renvoi += "("+this.x +", "+this.y+")";
+        return renvoi;
+    }
 }

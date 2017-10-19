@@ -1,4 +1,4 @@
-
+package Forme;
 // TODO implem parallelogramme
 
 public class Parallelogramme extends Forme {
@@ -12,6 +12,13 @@ public class Parallelogramme extends Forme {
         this.p4 = p4;
     }
 
+    public Parallelogramme(double p1x, double p1y, double p2x, double p2y, double p3x, double p3y, double p4x, double p4y){
+        this.p1 = new Point(p1x, p1y);
+        this.p2 = new Point(p2x, p2y);
+        this.p3 = new Point(p3x, p3y);
+        this.p4 = new Point(p4x, p4y);
+    }
+
     public boolean estLosange(){
         return false;
     }
@@ -22,6 +29,10 @@ public class Parallelogramme extends Forme {
 
     public boolean estCarre(){
         return false;
+    }
+
+    public Point[] points(){
+        return null;
     }
 
     @Override

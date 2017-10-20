@@ -6,6 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -30,11 +32,29 @@ public class Main extends Application {
 		list_function.setStyle("-fx-alignment: center; -fx-background-color: white;");
         list_function.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        list_function.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                //TODO changement de l'ecriture
+        list_function.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
+            list_function.getSelectionModel().getSelectedItems();
+
+            // back to normal
+            Font old_font;
+            Text t;
+            FontWeight fontw;
+            ObservableList<Integer> obs_tab = list_function.getSelectionModel().getSelectedIndices();
+
+
+            for(int i=0; i<list_function.getItems().size(); i++){
+                t = list_function.getItems().get(i);
+                old_font = t.getFont();
+
+                if(obs_tab.contains(i)){
+                    fontw = FontWeight.BOLD;
+                } else {
+                    fontw = FontWeight.NORMAL;
+                }
+
+                t.setFont(Font.font(old_font.getName(), fontw, old_font.getSize()));
             }
+
         });
 
 
@@ -42,23 +62,32 @@ public class Main extends Application {
             list_function.getItems().add(new Text(param));
         }
 
-        Font font;
-
-        for(Text func: list_function.getSelectionModel().getSelectedItems()){
-            // TODO changer le text en BOLD
-            font = func.getFont();
-
-            func.setFont(Font.font(font.getName(), FontWeight.BOLD, font.getSize()));
-
-        }
-
-
-
 		// boutons add delete
-        BorderPane buttons = new BorderPane();
-        buttons.setLeft(new Button("+"));
-        buttons.setRight(new Button("-"));
-        buttons.setStyle("-fx-alignment: bottom; -fx-background-color: white; -fx-padding: 5px;");
+        Button but_add = new Button("+");
+        but_add.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                // TODO ajout de fonction
+                System.out.println("Ajout de fonction");
+            }
+        });
+
+        Button but_delete = new Button("-");
+        but_delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+               for(Text t: list_function.getSelectionModel().getSelectedItems()){
+                   list_function.getItems().remove(t);
+                   // TODO remove du repere
+                   ((GrapherCanvas) repere.getCenter()).delete_function(t.getText());
+                   ((GrapherCanvas) repere.getCenter()).redraw();
+               }
+            }
+        });
+
+        ToolBar buttons = new ToolBar();
+        buttons.getItems().addAll(but_add,new Separator(), but_delete);
+        buttons.setStyle("-fx-background-color: white; -fx-padding: 5px;");
 
         BorderPane functions = new BorderPane();
 
@@ -71,7 +100,7 @@ public class Main extends Application {
 
 
 		
-		stage.setTitle("grapher");
+		stage.setTitle("Grapher");
 		stage.setScene(new Scene(root));
 		stage.show();
 	}

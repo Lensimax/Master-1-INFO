@@ -52,6 +52,10 @@ public class GrapherCanvas extends Canvas {
         this.addEventHandler(MouseEvent.ANY, new Handler(this));
 		this.addEventHandler(ScrollEvent.ANY, new ScrollerHandler(this));
 	}
+
+	public void delete_function(String param){
+	    // TODO delete function du vector
+    }
 	
 	public double minHeight(double width)  { return HEIGHT;}
 	public double maxHeight(double width)  { return Double.MAX_VALUE; }

@@ -48,6 +48,7 @@ public class Handler implements EventHandler<MouseEvent> {
                                     p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
                                     state = State.MIDDLE_DRAG_OR_CLICK;
                                 }
+
                             }
 
                             break;
@@ -89,6 +90,7 @@ public class Handler implements EventHandler<MouseEvent> {
                     case "MOUSE_DRAGGED":
 
                         this.canvas.translate(mouseEvent.getX() - p.getX(), mouseEvent.getY()- p.getY());
+                        p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
 
                         state = State.DRAG;
 

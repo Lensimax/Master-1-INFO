@@ -1,28 +1,23 @@
 package grapher.ui;
 
-import grapher.fc.FunctionFactory;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.*;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.Scene;
 
-import java.awt.*;
 
 
 public class Main extends Application {
 	public void start(Stage stage) {
-		SplitPane root = new SplitPane();
+		SplitPane split = new SplitPane();
+
+		StackPane root = new StackPane();
+		root.getChildren().addAll(split);
+
 
 		BorderPane repere = new BorderPane();
 		repere.setCenter(new GrapherCanvas(getParameters()));
@@ -64,30 +59,14 @@ public class Main extends Application {
 
 		// boutons add delete
         Button but_add = new Button("+");
-        but_add.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                // TODO ajout de fonction
-                System.out.println("Ajout de fonction");
-            }
-        });
+        but_add.setOnAction(new ButtonAddEvent(stage, list_function, (GrapherCanvas)repere.getCenter()));
 
         Button but_delete = new Button("-");
-        but_delete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-               for(Text t: list_function.getSelectionModel().getSelectedItems()){
-                   list_function.getItems().remove(t);
-                   // TODO remove du repere
-                   ((GrapherCanvas) repere.getCenter()).delete_function(t.getText());
-                   ((GrapherCanvas) repere.getCenter()).redraw();
-               }
-            }
-        });
+        but_delete.setOnAction(new ButtonDeleteEvent(list_function, (GrapherCanvas)repere.getCenter()));
 
         ToolBar buttons = new ToolBar();
         buttons.getItems().addAll(but_add,new Separator(), but_delete);
-        buttons.setStyle("-fx-background-color: white; -fx-padding: 5px;");
+        buttons.setStyle("-fx-padding: 5px;");
 
         BorderPane functions = new BorderPane();
 
@@ -95,8 +74,8 @@ public class Main extends Application {
         functions.setBottom(buttons);
         functions.setCenter(list_function);
 
-		root.getItems().addAll(functions, repere);
-		root.setDividerPositions(0.2);
+		split.getItems().addAll(functions, repere);
+		split.setDividerPositions(0.2);
 
 
 		

@@ -54,7 +54,19 @@ public class GrapherCanvas extends Canvas {
 	}
 
 	public void delete_function(String param){
-	    // TODO delete function du vector
+        for(int i=0; i<functions.size(); i++){
+            if(functions.get(i).toString().equals(param)){
+                functions.remove(i);
+            }
+        }
+    }
+
+    public void add_function(String param){
+	    Function func = FunctionFactory.createFunction(param);
+
+	    if(func != null){
+            functions.add(func);
+        }
     }
 	
 	public double minHeight(double width)  { return HEIGHT;}

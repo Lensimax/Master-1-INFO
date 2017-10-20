@@ -1,12 +1,3 @@
-#Ignore all
-*
-
-# Unignore all with extensions
-!*.*
-
-# Unignore all dires
-!*/
-!Makefile
 
 
 #Ignore
@@ -15,6 +6,6 @@
 *.idea/
 *.o
 *.class
-*/bin/*
-
-*/out/*
+*bin/*
+*out/*
+Semestre1/BD/TPBD/src/Log.java

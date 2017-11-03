@@ -5,6 +5,8 @@
 
 typedef struct{
 	pthread_mutex_t m;
+	int isWriting;
+	int nbLect;
 
 }lecteur_redacteur_t;
 

@@ -12,23 +12,30 @@ import javafx.scene.Scene;
 
 
 public class Main extends Application {
+
+    static final double width_bold = 3;
+    static final double width_default = 1;
+
+
+
 	public void start(Stage stage) {
 		SplitPane split = new SplitPane();
+        GrapherCanvas grapĥer = new GrapherCanvas(getParameters());
 
 		StackPane root = new StackPane();
 		root.getChildren().addAll(split);
 
 
 		BorderPane repere = new BorderPane();
-		repere.setCenter(new GrapherCanvas(getParameters()));
+		repere.setCenter(grapĥer);
 
 		// liste de fonctions
-		ListView<Text> list_function = new ListView<Text>();
+		ListView<Text> list_function = new ListView<>();
 		list_function.setStyle("-fx-alignment: center; -fx-background-color: white;");
         list_function.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         list_function.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
-            list_function.getSelectionModel().getSelectedItems();
+
 
             // back to normal
             Font old_font;
@@ -43,12 +50,15 @@ public class Main extends Application {
 
                 if(obs_tab.contains(i)){
                     fontw = FontWeight.BOLD;
+                    grapĥer.change_width_function(i, width_bold);
                 } else {
                     fontw = FontWeight.NORMAL;
+                    grapĥer.change_width_function(i, width_default);
                 }
 
                 t.setFont(Font.font(old_font.getName(), fontw, old_font.getSize()));
             }
+            grapĥer.redraw();
 
         });
 

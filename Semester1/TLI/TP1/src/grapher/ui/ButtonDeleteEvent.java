@@ -1,5 +1,6 @@
 package grapher.ui;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
@@ -20,11 +21,14 @@ public class ButtonDeleteEvent implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent actionEvent) {
-        for(Text t: list_function.getSelectionModel().getSelectedItems()){
-            list_function.getItems().remove(t);
-            // TODO remove du repere
-            grapher.delete_function(t.getText());
+
+        ObservableList<Integer> tab = list_function.getSelectionModel().getSelectedIndices();
+
+        for(int i: tab){
+            list_function.getItems().remove(i);
+            grapher.delete_function(i);
             grapher.redraw();
         }
+
     }
 }

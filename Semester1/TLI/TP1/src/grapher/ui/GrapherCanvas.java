@@ -38,7 +38,7 @@ public class GrapherCanvas extends Canvas {
 	protected double xmin, xmax;
 	protected double ymin, ymax;
 
-	protected Vector<Function> functions = new Vector<Function>();
+	protected Vector<Grapher_Function> functions = new Vector<Grapher_Function>();
 	
 	public GrapherCanvas(Parameters params) {
 		super(WIDTH, HEIGHT);
@@ -46,27 +46,32 @@ public class GrapherCanvas extends Canvas {
 		ymin = -1.5;   ymax = 1.5;
 		for(String param: params.getRaw()) {
 
-			functions.add(FunctionFactory.createFunction(param));
+			add_function(param);
 		}
 
         this.addEventHandler(MouseEvent.ANY, new Handler(this));
 		this.addEventHandler(ScrollEvent.ANY, new ScrollerHandler(this));
 	}
 
-	public void delete_function(String param){
-        for(int i=0; i<functions.size(); i++){
-            if(functions.get(i).toString().equals(param)){
-                functions.remove(i);
-            }
-        }
+
+	public void delete_function(int indice){
+        functions.remove(indice);
     }
 
     public void add_function(String param){
 	    Function func = FunctionFactory.createFunction(param);
 
 	    if(func != null){
-            functions.add(func);
+            functions.add(new Grapher_Function(func));
         }
+    }
+
+    public void change_color_function(int indice, Color c){
+        functions.get(indice).setColor(c);
+    }
+
+    public void change_width_function(int indice, double w){
+        functions.get(indice).setLineWidth(w);
     }
 	
 	public double minHeight(double width)  { return HEIGHT;}
@@ -115,6 +120,8 @@ public class GrapherCanvas extends Canvas {
 		// plot		
 		gc.translate(-MARGIN, -MARGIN);
 
+		gc.setLineWidth(1);
+
 		// x values
 		final int N = (int)(W/STEP + 1);
 		final double dx = dx(STEP);
@@ -126,16 +133,20 @@ public class GrapherCanvas extends Canvas {
 			Xs[i] = X(x);
 		}
 
-		for(Function f: functions) {
+		for(Grapher_Function f: functions) {
 			// y values
 			double Ys[] = new double[N];
 			for(int i = 0; i < N; i++) {
-				Ys[i] = Y(f.y(xs[i]));
+				Ys[i] = Y(f.getFunction().y(xs[i]));
 			}
-			
+
+            gc.setLineWidth(f.getLineWidth());
+            gc.setFill(f.getColor());
 			gc.strokePolyline(Xs, Ys, N);
 		}
-		
+
+		gc.setLineWidth(1);
+		gc.setFill(Color.BLACK);
 		gc.restore(); // restoring no clipping
 		
 		

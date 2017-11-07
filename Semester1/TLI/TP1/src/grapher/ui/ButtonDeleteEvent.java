@@ -14,7 +14,7 @@ public class ButtonDeleteEvent implements EventHandler<ActionEvent> {
     private GrapherCanvas grapher;
 
 
-    public ButtonDeleteEvent(ListView l, GrapherCanvas g){
+    public ButtonDeleteEvent(ListView<Text> l, GrapherCanvas g){
         this.list_function = l;
         this.grapher = g;
     }

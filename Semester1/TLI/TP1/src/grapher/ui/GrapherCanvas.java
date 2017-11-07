@@ -27,8 +27,8 @@ public class GrapherCanvas extends Canvas {
 	static final double MARGIN = 40;
 	static final double STEP = 5;
 
-	static final double WIDTH = 800;
-	static final double HEIGHT = 600;
+	static final double WIDTH = 600;
+	static final double HEIGHT = 400;
 	
 	private static DoubleStringConverter d2s = new DoubleStringConverter();
 	

@@ -175,7 +175,6 @@ public class Handler implements EventHandler<MouseEvent> {
                     case "MOUSE_DRAGGED":
 
                         // zoom quand on monte, dezoom quand on descend
-
                         if(mouseEvent.getY() > p.getY()){
                             // dezoom
                             this.canvas.zoom(p, -5);
@@ -183,6 +182,7 @@ public class Handler implements EventHandler<MouseEvent> {
                             // zoom
                             this.canvas.zoom(p, 5);
                         }
+                        p = new Point2D(mouseEvent.getX(), mouseEvent.getY());
 
                         state = State.WHEEL_ZOOM;
                         break;

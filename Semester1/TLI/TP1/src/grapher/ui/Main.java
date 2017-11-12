@@ -4,8 +4,10 @@ import grapher.fc.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -14,7 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.Scene;
-
+import javafx.util.Callback;
 
 
 public class Main extends Application {
@@ -22,6 +24,7 @@ public class Main extends Application {
     static final double width_bold = 3;
     static final double width_default = 1;
 
+    private TableView<Grapher_Function> table_functions = new TableView<Grapher_Function>();
 
 
 	public void start(Stage stage) {
@@ -31,22 +34,32 @@ public class Main extends Application {
 
         TableColumn functions = new TableColumn("Functions");
         functions.setMinWidth(100);
-        functions.setCellValueFactory(new PropertyValueFactory<Grapher_Function, Function>("function"));
+        functions.setCellValueFactory(new PropertyValueFactory<Grapher_Function, String>("string_function"));
+        functions.setCellFactory(TextFieldTableCell.forTableColumn());
+        functions.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Grapher_Function, String>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Grapher_Function, String> t) {
+                        ((Grapher_Function) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())
+                        ).setString_function(t.getNewValue());
+                        // TODO verfier la fonction rentrée
+                    }
+                }
+        );
 
 
-        TableCell<ColorPicker, Color> color = new TableCell<>();
-        color.setMinWidth(50);
-//        color.setCellValueFactory(new PropertyValueFactory<Grapher_Function, ColorPicker>("color"));
+        TableColumn colors = new TableColumn("Colors");
+        colors.setMinWidth(50);
 
 
-        TableView<Grapher_Function> table_functions = new TableView<>();
+
         table_functions.setEditable(true);
         table_functions.setItems(list_function);
 
 
 
-        table_functions.getColumns().add(0,functions);
-//        table_functions.getColumns().add(1,color);
+        table_functions.getColumns().addAll(functions, colors);
 
 
 

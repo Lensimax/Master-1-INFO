@@ -1,10 +1,14 @@
 package grapher.ui;
 
+import grapher.fc.Function;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,8 +27,32 @@ public class Main extends Application {
 	public void start(Stage stage) {
 		SplitPane split = new SplitPane();
         GrapherCanvas grapher = new GrapherCanvas(getParameters());
-        ListView<Text> list_function = creationListFunction(grapher);
-        MenuBarGrapher toolbar = new MenuBarGrapher(list_function, grapher);
+        ObservableList<Grapher_Function> list_function = creationFunction_list(grapher);
+
+        TableColumn functions = new TableColumn("Functions");
+        functions.setMinWidth(100);
+        functions.setCellValueFactory(new PropertyValueFactory<Grapher_Function, Function>("function"));
+
+
+        TableCell<ColorPicker, Color> color = new TableCell<>();
+        color.setMinWidth(50);
+//        color.setCellValueFactory(new PropertyValueFactory<Grapher_Function, ColorPicker>("color"));
+
+
+        TableView<Grapher_Function> table_functions = new TableView<>();
+        table_functions.setEditable(true);
+        table_functions.setItems(list_function);
+
+
+
+        table_functions.getColumns().add(0,functions);
+//        table_functions.getColumns().add(1,color);
+
+
+
+
+
+        MenuBarGrapher toolbar = new MenuBarGrapher(null, grapher);
 
         BorderPane root = new BorderPane();
         root.setCenter(split);
@@ -36,22 +64,22 @@ public class Main extends Application {
 
 		// boutons add delete
         Button but_add = new Button("+");
-        but_add.setOnAction(new ButtonAddEvent(list_function, grapher));
+//        but_add.setOnAction(new ButtonAddEvent(list_function, grapher));
 
         Button but_delete = new Button("-");
-        but_delete.setOnAction(new ButtonDeleteEvent(list_function, grapher));
+//        but_delete.setOnAction(new ButtonDeleteEvent(list_function, grapher));
 
         ToolBar buttons = new ToolBar();
         buttons.getItems().addAll(but_add,new Separator(), but_delete);
         buttons.setStyle("-fx-padding: 5px;");
 
-        BorderPane functions = new BorderPane();
+        BorderPane left_splitview = new BorderPane();
 
 
-        functions.setBottom(buttons);
-        functions.setCenter(list_function);
+        left_splitview.setBottom(buttons);
+        left_splitview.setCenter(table_functions);
 
-		split.getItems().addAll(functions, grapher);
+		split.getItems().addAll(left_splitview, grapher);
 		split.setDividerPositions(0.2);
 
 
@@ -66,17 +94,27 @@ public class Main extends Application {
 	}
 
 
-
-
-
-
-
-	public ListView<Text> creationListFunction(GrapherCanvas grapher){
+    public ObservableList<Grapher_Function> creationFunction_list(GrapherCanvas grapher){
 
         // liste de fonctions
-        ListView<Text> list_function = new ListView<>();
-        list_function.setStyle("-fx-alignment: center; -fx-background-color: white;");
-        list_function.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        ObservableList<Grapher_Function>list_function = FXCollections.observableArrayList();
+
+        for(String param: getParameters().getRaw()) { // ajout des fonctions en parametre)
+            list_function.add(new Grapher_Function(param));
+        }
+
+
+        return list_function;
+    }
+
+
+
+
+
+	/*public ObservableList<Grapher_Function> creationListFunction(GrapherCanvas grapher){
+
+        // liste de fonctions
+        ObservableList<Grapher_Function>list_function = FXCollections.observableArrayList();
 
         list_function.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
 
@@ -114,6 +152,6 @@ public class Main extends Application {
         return list_function;
     }
 
-
+*/
 
 }

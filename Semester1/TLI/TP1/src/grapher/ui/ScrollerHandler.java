@@ -9,8 +9,6 @@ public class ScrollerHandler implements EventHandler<ScrollEvent> {
 
     GrapherCanvas canvas;
 
-    Point2D p;
-
     public ScrollerHandler(GrapherCanvas c){
         this.canvas = c;
     }

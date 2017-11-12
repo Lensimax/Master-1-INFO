@@ -4,12 +4,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 
-import java.security.Key;
 
 public class MenuBarGrapher extends MenuBar {
 
@@ -65,21 +62,16 @@ public class MenuBarGrapher extends MenuBar {
         // add event
 
         add.setOnAction(new ButtonAddEvent(this.list_function, this.grapher));
-        add.setAccelerator(new KeyCombination() {
+        add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+        /*add.setAccelerator(new KeyCombination() {
             @Override
             public boolean match(KeyEvent event) {
                 return event.isControlDown() && event.getCode() == KeyCode.N;
             }
-        });
+        });*/
         delete.setOnAction(new ButtonDeleteEvent(this.list_function, this.grapher));
-        delete.setAccelerator(new KeyCombination() {
-            @Override
-            public boolean match(KeyEvent event) {
-                return event.isControlDown() && event.getCode() == KeyCode.BACK_SPACE;
-            }
-        });
+        delete.setAccelerator(KeyCombination.keyCombination("Ctrl+Backspace"));
 
-        // TODO ?????????
 
     }
 }

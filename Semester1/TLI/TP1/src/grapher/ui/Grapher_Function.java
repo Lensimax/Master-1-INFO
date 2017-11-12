@@ -2,6 +2,7 @@ package grapher.ui;
 
 
 import grapher.fc.Function;
+import grapher.fc.FunctionFactory;
 import javafx.scene.paint.Color;
 
 public class Grapher_Function {
@@ -17,6 +18,12 @@ public class Grapher_Function {
 
     public Grapher_Function(Function f){
         this.function = f;
+        this.color = Color.BLACK;
+        this.lineWidth = 1;
+    }
+
+    public Grapher_Function(String s){
+        this.function = FunctionFactory.createFunction(s);
         this.color = Color.BLACK;
         this.lineWidth = 1;
     }

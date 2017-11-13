@@ -11,13 +11,14 @@ public class Grapher_Function {
     Color color;
     Function function;
 
+
+
     ColorPicker color_picker;
 
 
 
     double lineWidth;
     SimpleStringProperty string_function;
-
 
 
     public Grapher_Function(Function f, Color c, double l){
@@ -60,6 +61,7 @@ public class Grapher_Function {
         this.function = function;
     }
 
+
     public double getLineWidth() {
         return lineWidth;
     }
@@ -78,5 +80,13 @@ public class Grapher_Function {
 
     public void setString_function(String string_function) {
         this.string_function.set(string_function);
+    }
+
+    public ColorPicker getColor_picker() {
+        return color_picker;
+    }
+
+    public void setColor_picker(ColorPicker color_picker) {
+        this.color_picker = color_picker;
     }
 }

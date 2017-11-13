@@ -1,5 +1,7 @@
 package grapher.ui;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -45,15 +47,14 @@ public class MenuBarGrapher extends MenuBar {
         Menu view = new Menu("View");
         zoom = new MenuItem("Zoom");
         unzoom = new MenuItem("Unzoom");
+
         view.getItems().addAll(zoom, unzoom);
 
         // Menu expressions
         Menu expression = new Menu("Expression");
         add = new MenuItem("Add");
         delete = new MenuItem("Delete");
-        change_color = new MenuItem("Change color");
-        change_function = new MenuItem("Change function");
-        expression.getItems().addAll(add, delete, change_function, change_color);
+        expression.getItems().addAll(add, delete);
 
 
 
@@ -61,11 +62,26 @@ public class MenuBarGrapher extends MenuBar {
 
         // add event
 
-        add.setOnAction(new ButtonAddEvent_Handler(this.list_function, this.grapher));
+        zoom.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.grapher.zoom_from_center(5);
+            }
+        });
+
+
+        unzoom.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.grapher.zoom_from_center(-5);
+            }
+        });
+
+        add.setOnAction(new ButtonAddEvent_Handler());
         add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
 
         
-        delete.setOnAction(new ButtonDeleteEvent_Handler(this.list_function, this.grapher));
+        delete.setOnAction(new ButtonDeleteEvent_Handler());
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+Backspace"));
 
 

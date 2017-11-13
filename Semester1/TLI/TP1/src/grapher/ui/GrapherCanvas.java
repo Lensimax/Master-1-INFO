@@ -38,7 +38,6 @@ public class GrapherCanvas extends Canvas {
 	protected double xmin, xmax;
 	protected double ymin, ymax;
 
-	protected Vector<Grapher_Function> functions = new Vector<Grapher_Function>();
 	
 	public GrapherCanvas(Parameters params) {
 		super(WIDTH, HEIGHT);
@@ -50,26 +49,6 @@ public class GrapherCanvas extends Canvas {
 		this.addEventHandler(ScrollEvent.ANY, new ScrollerHandler(this));
 	}
 
-
-	public void delete_function(int indice){
-        functions.remove(indice);
-    }
-
-    public void add_function(String param){
-	    Function func = FunctionFactory.createFunction(param);
-
-	    if(func != null){
-            functions.add(new Grapher_Function(func));
-        }
-    }
-
-    public void change_color_function(int indice, Color c){
-        functions.get(indice).setColor(c);
-    }
-
-    public void change_width_function(int indice, double w){
-        functions.get(indice).setLineWidth(w);
-    }
 	
 	public double minHeight(double width)  { return HEIGHT;}
 	public double maxHeight(double width)  { return Double.MAX_VALUE; }
@@ -130,7 +109,7 @@ public class GrapherCanvas extends Canvas {
 			Xs[i] = X(x);
 		}
 
-		for(Grapher_Function f: Main.list_function) {
+		for(Grapher_Type f: Main.list_function) {
 			// y values
 			double Ys[] = new double[N];
 			for(int i = 0; i < N; i++) {
@@ -138,7 +117,7 @@ public class GrapherCanvas extends Canvas {
 			}
 
             gc.setLineWidth(f.getLineWidth());
-            gc.setFill(f.getColor());
+            gc.setStroke(f.getColor_picker().getValue());
 			gc.strokePolyline(Xs, Ys, N);
 		}
 
@@ -220,6 +199,15 @@ public class GrapherCanvas extends Canvas {
 		ymin = y + (ymin-y)/ds; ymax = y + (ymax-y)/ds;
 		redraw();
 	}
+
+    protected void zoom_from_center(double dz) {
+        double x = x(WIDTH/2);
+        double y = y(HEIGHT/2);
+        double ds = exp(dz*.01);
+        xmin = x + (xmin-x)/ds; xmax = x + (xmax-x)/ds;
+        ymin = y + (ymin-y)/ds; ymax = y + (ymax-y)/ds;
+        redraw();
+    }
 	
 	protected void zoom(Point2D p0, Point2D p1) {
 		double x0 = x(p0.getX());

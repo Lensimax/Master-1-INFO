@@ -14,22 +14,15 @@ import javafx.stage.Stage;
 public class ButtonAddEvent_Handler implements EventHandler<ActionEvent> {
 
 
-    private ListView<Text> list_function;
-    private GrapherCanvas grapher;
-    private Stage stage;
 
-
-    public ButtonAddEvent_Handler(ListView l, GrapherCanvas g){
-        this.list_function = l;
-        this.grapher = g;
+    public ButtonAddEvent_Handler(){
     }
 
 
     @Override
     public void handle(ActionEvent actionEvent) {
 
-        Popup_function popup = new Popup_function(this.list_function, this.grapher);
-
+        Popup_function popup = new Popup_function();
         popup.show();
 
     }

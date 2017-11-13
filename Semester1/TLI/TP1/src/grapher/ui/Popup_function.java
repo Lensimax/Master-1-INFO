@@ -6,15 +6,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Popup_function extends Stage {
 
 
-    public Popup_function(ListView<Text> list_function, GrapherCanvas grapher){
+    public Popup_function(){
         this.setHeight(100);
         this.setWidth(250);
+
 
         Stage popup = this;
 
@@ -32,13 +32,11 @@ public class Popup_function extends Stage {
 
 
         Button submit = new Button("Submit");
+        submit.setDefaultButton(true);
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                list_function.getItems().add(new Text(textField.getText()));
-                grapher.add_function(textField.getText());
-                grapher.redraw();
-
+                Main.list_function.add(new Grapher_Type(textField.getText()));
                 popup.close();
 
             }
@@ -61,6 +59,8 @@ public class Popup_function extends Stage {
         page.setBottom(buttons);
         this.setScene(new Scene(page));
         this.setTitle("Expression");
+
+
     }
 
 

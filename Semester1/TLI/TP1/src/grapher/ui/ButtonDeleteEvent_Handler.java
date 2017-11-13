@@ -10,24 +10,18 @@ import javafx.scene.text.Text;
 
 public class ButtonDeleteEvent_Handler implements EventHandler<ActionEvent> {
 
-    private ListView<Text> list_function;
-    private GrapherCanvas grapher;
 
 
-    public ButtonDeleteEvent_Handler(ListView<Text> l, GrapherCanvas g){
-        this.list_function = l;
-        this.grapher = g;
+    public ButtonDeleteEvent_Handler(){
     }
 
     @Override
     public void handle(ActionEvent actionEvent) {
 
-        ObservableList<Integer> tab = list_function.getSelectionModel().getSelectedIndices();
+        ObservableList<Integer> tab = Main.table_functions.getSelectionModel().getSelectedIndices();
 
-        for(int i: tab){
-            list_function.getItems().remove(i);
-            grapher.delete_function(i);
-            grapher.redraw();
+        for(int i=tab.size()-1; i>=0; i--){
+            Main.list_function.remove(i);
         }
 
     }

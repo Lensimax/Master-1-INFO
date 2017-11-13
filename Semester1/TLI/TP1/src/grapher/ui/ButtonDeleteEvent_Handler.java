@@ -8,13 +8,13 @@ import javafx.scene.text.Text;
 
 
 
-public class ButtonDeleteEvent implements EventHandler<ActionEvent> {
+public class ButtonDeleteEvent_Handler implements EventHandler<ActionEvent> {
 
     private ListView<Text> list_function;
     private GrapherCanvas grapher;
 
 
-    public ButtonDeleteEvent(ListView<Text> l, GrapherCanvas g){
+    public ButtonDeleteEvent_Handler(ListView<Text> l, GrapherCanvas g){
         this.list_function = l;
         this.grapher = g;
     }

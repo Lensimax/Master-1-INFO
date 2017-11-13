@@ -61,15 +61,11 @@ public class MenuBarGrapher extends MenuBar {
 
         // add event
 
-        add.setOnAction(new ButtonAddEvent(this.list_function, this.grapher));
+        add.setOnAction(new ButtonAddEvent_Handler(this.list_function, this.grapher));
         add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        /*add.setAccelerator(new KeyCombination() {
-            @Override
-            public boolean match(KeyEvent event) {
-                return event.isControlDown() && event.getCode() == KeyCode.N;
-            }
-        });*/
-        delete.setOnAction(new ButtonDeleteEvent(this.list_function, this.grapher));
+
+        
+        delete.setOnAction(new ButtonDeleteEvent_Handler(this.list_function, this.grapher));
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+Backspace"));
 
 

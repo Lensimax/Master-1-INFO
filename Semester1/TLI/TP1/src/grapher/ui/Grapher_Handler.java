@@ -8,7 +8,7 @@ import javafx.scene.input.MouseEvent;
 import static javafx.scene.Cursor.DEFAULT;
 import static javafx.scene.Cursor.MOVE;
 
-public class Handler implements EventHandler<MouseEvent> {
+public class Grapher_Handler implements EventHandler<MouseEvent> {
 
     GrapherCanvas canvas;
 
@@ -20,7 +20,7 @@ public class Handler implements EventHandler<MouseEvent> {
 
     State state = State.IDLE;
 
-    public Handler(GrapherCanvas c){
+    public Grapher_Handler(GrapherCanvas c){
         this.canvas = c;
     }
 

@@ -44,12 +44,9 @@ public class GrapherCanvas extends Canvas {
 		super(WIDTH, HEIGHT);
 		xmin = -PI/2.; xmax = 3*PI/2;
 		ymin = -1.5;   ymax = 1.5;
-		for(String param: params.getRaw()) {
 
-			add_function(param);
-		}
 
-        this.addEventHandler(MouseEvent.ANY, new Handler(this));
+        this.addEventHandler(MouseEvent.ANY, new Grapher_Handler(this));
 		this.addEventHandler(ScrollEvent.ANY, new ScrollerHandler(this));
 	}
 
@@ -133,7 +130,7 @@ public class GrapherCanvas extends Canvas {
 			Xs[i] = X(x);
 		}
 
-		for(Grapher_Function f: functions) {
+		for(Grapher_Function f: Main.list_function) {
 			// y values
 			double Ys[] = new double[N];
 			for(int i = 0; i < N; i++) {

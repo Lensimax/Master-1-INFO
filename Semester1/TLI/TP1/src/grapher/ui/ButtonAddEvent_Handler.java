@@ -11,7 +11,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-public class ButtonAddEvent implements EventHandler<ActionEvent> {
+public class ButtonAddEvent_Handler implements EventHandler<ActionEvent> {
 
 
     private ListView<Text> list_function;
@@ -19,7 +19,7 @@ public class ButtonAddEvent implements EventHandler<ActionEvent> {
     private Stage stage;
 
 
-    public ButtonAddEvent(ListView l, GrapherCanvas g){
+    public ButtonAddEvent_Handler(ListView l, GrapherCanvas g){
         this.list_function = l;
         this.grapher = g;
     }

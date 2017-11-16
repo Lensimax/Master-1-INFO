@@ -87,7 +87,7 @@ void algo_principal(int parallelism, int *tableau, int taille, char *arg)
 
     int temps = secondes * pow(10, 6) + usecondes;
 
-    printf("%d", temps - temps_creation_thread);
+    printf("%d", temps);
 
     free(arguments);
     free(tids);

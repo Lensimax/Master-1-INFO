@@ -1,28 +1,58 @@
 #!/bin/sh
 
-bornesup=4
+# Variables
 
-for j in `seq 1 4`
+NBTEST=30
+NBTHREAD_MAX=16
+
+
+# 50 100 1000 5000 10000 50000 100000 500000 1000000 10000000
+
+rm -f Test/*
+
+# Debut des test 
+
+for size in 50 100 1000 5000 # variation de la taille
 do
+	./creer_vecteur --size $size > Test/vecteur.txt
+
+	# sequentiel
+
 	cpt_seq=0
-	cpt_thr=0
 
-	echo '' > Stat$j.txt
-
-	for i in `seq 1 $bornesup`
+	for i in `seq 1 $NBTEST`
 	do
-		./creer_vecteur --size 10000  >vecteur.txt
-		seq=`./tri_sequentiel --quiet --rusage <vecteur.txt`
-		# >> Stat$j.txt
-		thr=`./tri_threads --quiet --rusage --parallelism $j <vecteur.txt`
-		echo  $seq $thr >> Stat$j.txt
-
-		cpt_seq=$(($cpt_seq+$seq))
-		cpt_thr=$(($cpt_thr+$thr))
+		time_seq=`./tri_sequentiel --quiet --rusage < Test/vecteur.txt`
+		cpt_seq=$(($cpt_seq+$time_seq))
 	done
 
-	echo "avg seq" $(($cpt_seq/4))
-	echo "avg thr" $(($cpt_thr/4))
+	avg_seq=$(($cpt_seq/$NBTEST))
+	echo "Moyenne en sequentiel pour vecteur de " $size ": " $avg_seq
+
+	printf $size $avg_seq >> Test/resultat
+	
+
+	# threadé 
+	# on fait varier le nombre de thread 
+
+	for nb_thread in `seq 1 $NBTHREAD_MAX`
+	do
+		cpt_thr=0
+
+		for j in `seq 1 $NBTEST`
+		do
+			time_thr=`./tri_threads --quiet --rusage --parallelism $nb_thread < Test/vecteur.txt`
+			cpt_thr=$(($cpt_thr+$time_thr))
+
+		done
+
+		avg_thr=$(($cpt_thr/$NBTEST))
+
+		echo "Moyenne en threadé pour vecteur de " $size "avec " $nb_thread ": " $(($cpt_seq/$NBTEST))
+		printf $avg_thr >> Test/resultat
+	done
+	
+	printf "\n" >> Test/resultat
 
 done 
 

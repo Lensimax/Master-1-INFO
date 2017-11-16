@@ -12,7 +12,7 @@ rm -f Test/*
 
 # Debut des test 
 
-for size in 50 100 1000 5000 10000 50000 100000 500000 1000000 10000000 # variation de la taille
+for size in 50 100 1000 5000 10000 50000 100000 500000 1000000 # variation de la taille
 do
 	./creer_vecteur --size $size > Test/vecteur.txt
 

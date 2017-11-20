@@ -1,0 +1,4 @@
+Ce package contient :
+- un petit programme de test interactif de l'allocateur qui devra être implémenté dans mem.c : memshell
+- un petit programme contenant un test simple de l'initialisation de l'allocateur qui devra être implémenté dans mem.c : memtest
+- un Makefile vous permettant de compiler tout ces petits programmes et de tester votre allocateur avec une appli réelle (make test_ls)

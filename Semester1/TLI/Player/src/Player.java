@@ -1,6 +1,7 @@
 
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -60,22 +61,11 @@ public class Player extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if(file.isSelected()){
-                    // afficher le tree table
-//                    if(root.getCenter() == null){
-
-                        root.setCenter(treeTableView);
-//                        primaryStage.setMinHeight(Top.getHeight() + heightMinWindow + heightWindow);
-//                        primaryStage.setMaxHeight(0);
-                        primaryStage.setHeight(Top.getHeight() + treeTableView.getPrefHeight() + heightWindow);
-//                    }
+                    root.setCenter(treeTableView);
+                    primaryStage.setHeight(Top.getHeight() + treeTableView.getPrefHeight() + heightWindow);
                 } else {
-//                    if(root.getCenter() != null){
-
-                        root.setCenter(null);
-                        primaryStage.setHeight(Top.getHeight() + heightWindow);
-//                        primaryStage.setMinHeight(Top.getHeight() + heightWindow);
-//                        primaryStage.setMaxHeight(Top.getHeight() + heightWindow);
-//                    }
+                    root.setCenter(null);
+                    primaryStage.setHeight(Top.getHeight() + heightWindow);
 
                 }
             }
@@ -130,26 +120,84 @@ public class Player extends Application {
         primaryStage.setTitle("Player VLC");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-//        primaryStage.setMinHeight(Top.getHeight() + heightWindow);
-//        primaryStage.setHeight(Top.getHeight() + heightWindow);
     }
 
     public void creationTreeTableView(){
 
-        final TreeItem<String> ACDC = new TreeItem<>("ACDC");
-        ACDC.getChildren().addAll(
-                new TreeItem<>("Highway to Hell"),
-                new TreeItem<String>("Back in black"),
-                new TreeItem<String>("Shook me all night long")
+        // artist ACDC
+
+        final TreeItem<Music> ACDC = new TreeItem<>(new Music("ACDC", "", ""));
+
+        final TreeItem<Music> Black_Ice = new TreeItem<>(new Music("Black Ice", "", ""));
+
+        // album Black Ice
+        Black_Ice.setExpanded(true);
+        Black_Ice.getChildren().addAll(
+                new TreeItem<Music>(new Music("Highway To Hell", "ACDC", "3:34")),
+                new TreeItem<Music>(new Music("Black Ice", "ACDC", "3:25")),
+                new TreeItem<Music>(new Music("Money Made", "ACDC", "4:15"))
         );
+
+        // album High Voltage
+        final TreeItem<Music> High_Voltage = new TreeItem<>(new Music("High Voltage", "", ""));
+        High_Voltage.setExpanded(true);
+        High_Voltage.getChildren().addAll(
+                new TreeItem<Music>(new Music("Live Wire", "ACDC", "5:49")),
+                new TreeItem<Music>(new Music("T.N.T", "ACDC", "3:35")),
+                new TreeItem<Music>(new Music("She's got balls", "ACDC", "4:51"))
+        );
+
+
+        ACDC.getChildren().addAll(Black_Ice, High_Voltage);
         ACDC.setExpanded(true);
+
+
+        // artist Billy Talent
+        final TreeItem<Music> Billy_Talent = new TreeItem<>(new Music("Billy Talent", "", ""));
+
+        // album Billy Talent II
+        final TreeItem<Music> Billy_Talent_II = new TreeItem<>(new Music("Billy Talent II", "", ""));
+        Billy_Talent_II.setExpanded(true);
+        Billy_Talent_II.getChildren().addAll(
+                new TreeItem<Music>(new Music("Red Flah", "Billy Talent", "3:17")),
+                new TreeItem<Music>(new Music("Fallen Leaves", "Billy Talent", "3:19"))
+        );
+
+        // album Billy Talent III
+        final TreeItem<Music> Billy_Talent_III = new TreeItem<>(new Music("Billy Talent III", "", ""));
+        Billy_Talent_III.setExpanded(true);
+        Billy_Talent_III.getChildren().addAll(
+                new TreeItem<Music>(new Music("Rusted From The Rain", "Billy Talent", "4:13"))
+        );
+
+
+        Billy_Talent.getChildren().addAll(Billy_Talent_II, Billy_Talent_III);
+        Billy_Talent.setExpanded(true);
 
 //        TreeTableColumn<String, String> Artiste = new TreeTableColumn<>();
 
-        TreeTableColumn<String,String> column = new TreeTableColumn<>("Nom");
+        final TreeItem<Music> root = new TreeItem<Music>();
+        root.getChildren().addAll(ACDC, Billy_Talent); // pour ajouter autant de noeud que l'on veut
 
-        treeTableView = new TreeTableView(ACDC);
-        treeTableView.setStyle("-fx-background-color:green;");
+        treeTableView = new TreeTableView(root);
+        treeTableView.setShowRoot(false); // pour ne pas voir le root
+
+
+        // creation des colonnes
+        TreeTableColumn<Music,String> name_music_column = new TreeTableColumn<Music, String>("Name");
+        // on indique comment les remplir
+        name_music_column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Music, String> p) ->
+                new ReadOnlyStringWrapper(p.getValue().getValue().getName()));
+        // same
+        TreeTableColumn<Music,String> auteur_column = new TreeTableColumn<>("Auteur");
+        auteur_column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Music, String> p) ->
+                new ReadOnlyStringWrapper(p.getValue().getValue().getAuteur()));
+        // same
+        TreeTableColumn<Music,String> duree_column = new TreeTableColumn<>("Duree");
+        duree_column.setCellValueFactory((TreeTableColumn.CellDataFeatures<Music, String> p) ->
+                new ReadOnlyStringWrapper(p.getValue().getValue().getDuree()));
+
+        treeTableView.getColumns().addAll(name_music_column, auteur_column, duree_column); // ajout de toutes les colonnes
         treeTableView.setPrefHeight(300);
     }
 

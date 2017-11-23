@@ -1,37 +1,37 @@
 
 public class Music {
-    String name;
-    String auteur;
-    String duree;
+    String Name;
+    String Auteur;
+    String Duree;
 
-    Music(String n, String a, String d){
-        this.name = n;
-        this.auteur = a;
-        this.duree = d;
+    Music(String name_music, String artist, String length){
+        this.Name = name_music;
+        this.Auteur = artist;
+        this.Duree = length;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
     }
 
     public String getAuteur() {
-        return auteur;
+        return Auteur;
     }
 
     public void setAuteur(String auteur) {
-        this.auteur = auteur;
+        Auteur = auteur;
     }
 
     public String getDuree() {
-        return duree;
+        return Duree;
     }
 
     public void setDuree(String duree) {
-        this.duree = duree;
+        Duree = duree;
     }
 }
 

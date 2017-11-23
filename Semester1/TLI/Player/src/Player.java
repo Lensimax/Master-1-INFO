@@ -2,6 +2,8 @@
 
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -59,24 +61,36 @@ public class Player extends Application {
             public void handle(ActionEvent actionEvent) {
                 if(file.isSelected()){
                     // afficher le tree table
-                    if(root.getCenter() == null){
+//                    if(root.getCenter() == null){
 
                         root.setCenter(treeTableView);
-                        primaryStage.setMinHeight(Top.getHeight() + heightMinWindow + heightWindow);
+//                        primaryStage.setMinHeight(Top.getHeight() + heightMinWindow + heightWindow);
+//                        primaryStage.setMaxHeight(0);
                         primaryStage.setHeight(Top.getHeight() + treeTableView.getPrefHeight() + heightWindow);
-                    }
+//                    }
                 } else {
-                    if(root.getCenter() != null){
+//                    if(root.getCenter() != null){
 
                         root.setCenter(null);
                         primaryStage.setHeight(Top.getHeight() + heightWindow);
-                        primaryStage.setMinHeight(Top.getHeight() + heightWindow);
-                        primaryStage.setMaxHeight(Top.getHeight() + heightWindow);
-                    }
+//                        primaryStage.setMinHeight(Top.getHeight() + heightWindow);
+//                        primaryStage.setMaxHeight(Top.getHeight() + heightWindow);
+//                    }
 
                 }
             }
         });
+        file.selectedProperty().addListener(new javafx.beans.value.ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean number, Boolean t1) {
+                if(file.isSelected()){
+                    file.setStyle("-fx-background-color: deepskyblue");
+                } else {
+                    file.setStyle("-fx-background-color: white");
+                }
+            }
+        });
+
         containerButton.getChildren().addAll(equalizer, file);
         volume_equalizer.setLeft(volume);
         volume_equalizer.setRight(containerButton);
@@ -100,15 +114,17 @@ public class Player extends Application {
         Top.setLeft(containerHBOX);
         Top.setCenter(barreEvolution);
 
-        /*primaryStage.heightProperty().addListener(new javafx.beans.value.ChangeListener<Number>() {
+        primaryStage.heightProperty().addListener(new javafx.beans.value.ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                if(t1.intValue() < 200){
+                if(primaryStage.getHeight() < 200){
                     System.out.println("Resize");
+                    root.setCenter(null);
                     file.setSelected(false);
+                    primaryStage.setHeight(Top.getHeight() + heightWindow);
                 }
             }
-        });*/
+        });
 
 
         primaryStage.setTitle("Player VLC");
@@ -119,7 +135,20 @@ public class Player extends Application {
     }
 
     public void creationTreeTableView(){
-        treeTableView = new TreeTableView();
+
+        final TreeItem<String> ACDC = new TreeItem<>("ACDC");
+        ACDC.getChildren().addAll(
+                new TreeItem<>("Highway to Hell"),
+                new TreeItem<String>("Back in black"),
+                new TreeItem<String>("Shook me all night long")
+        );
+        ACDC.setExpanded(true);
+
+//        TreeTableColumn<String, String> Artiste = new TreeTableColumn<>();
+
+        TreeTableColumn<String,String> column = new TreeTableColumn<>("Nom");
+
+        treeTableView = new TreeTableView(ACDC);
         treeTableView.setStyle("-fx-background-color:green;");
         treeTableView.setPrefHeight(300);
     }

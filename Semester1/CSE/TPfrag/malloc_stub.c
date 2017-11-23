@@ -5,7 +5,6 @@
 
 static __thread int in_lib=0;
 
-
 #define dprintf(args...) \
   do { \
     if (!in_lib) { \
@@ -29,12 +28,13 @@ void *malloc(size_t s) {
     void *result;
 
     init();
-    dprintf("Allocation de %lu octets...", (unsigned long) s);
+    dprintf("Allocation de %lu octet... ", (unsigned long) s);
     result = mem_alloc(s);
     if (!result)
         dprintf(" Alloc FAILED !!");
-    else
-	dprintf(" %lx\n", (unsigned long) result);
+    //else
+	//dprintf("xx:%lx\n", (unsigned long) result);
+
     return result;
 }
 
@@ -43,14 +43,16 @@ void *calloc(size_t count, size_t size) {
     char *p;
     size_t s = count*size;
 
+
     init();
-    dprintf("Allocation de %zu octets\n", s);
+    dprintf("Allocation de %zu \n", s);
     p = mem_alloc(s);
     if (!p)
         dprintf(" Alloc FAILED !!");
     if (p)
         for (i=0; i<s; i++)
             p[i] = 0;
+
     return p;
 }
 
@@ -61,33 +63,32 @@ void *realloc(void *ptr, size_t size) {
     init();
     dprintf("Reallocation de la zone en %lx\n", (unsigned long) ptr);
     if (!ptr) {
-        dprintf(" Realloc of NULL pointer\n");
+        dprintf("Realloc of NULL pointer...");
         return mem_alloc(size);
     }
     if (mem_get_size(ptr) >= size) {
-        dprintf(" Useless realloc\n");
+        dprintf("Useless realloc \n");
         return ptr;
     }
     result = mem_alloc(size);
     if (!result) {
-        dprintf(" Realloc FAILED\n");
+        dprintf("Realloc FAILED \n");
         return NULL;
     }
     for (s = 0; s<mem_get_size(ptr); s++)
         result[s] = ((char *) ptr)[s];
     mem_free(ptr);
-    dprintf(" Realloc ok\n");
+    dprintf("Realloc ok\n");
     return result;
 }
-
-
 
 void free(void *ptr) {
     init();
     if (ptr) {
-        dprintf("Liberation de la zone en %lx\n", (unsigned long) ptr);
+        dprintf("Liberation de la zone en %lx...\n ", (unsigned long) ptr);
         mem_free(ptr);
     } else {
         dprintf("Liberation de la zone NULL\n");
     }
 }
+

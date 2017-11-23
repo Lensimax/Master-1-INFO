@@ -4,10 +4,11 @@ CC=gcc
 # on Debian/Ubuntu)
 #HOST32= -m32
 
-CFLAGS+= $(HOST32) -Wall -Werror -std=c99 -g -DMEMORY_SIZE=128000
+CFLAGS+= $(HOST32) -Wall -Werror -std=gnu99 -g -DMEMORY_SIZE=128000
 CFLAGS+= -DDEBUG
 # pour tester avec ls
-CFLAGS+= -fPIC -lpthread
+CFLAGS+= -fPIC
+CFLAGS+= -lpthread
 LDFLAGS= $(HOST32)
 TESTS+=test_init
 PROGRAMS=memshell $(TESTS)
@@ -24,12 +25,9 @@ $(PROGRAMS) libmalloc.so: %: mem.o common.o
 $(patsubst %.c,%.o,$(wildcard *.c)): %.o: .%.deps
 
 .%.deps: %.c
-	$(CC) $(CFLAGS) -MM $< | sed -e 's/\(.*\).o: /.\1.deps \1.o: /' > $@ 
+	$(CC) $(CFLAGS) -MM $< | sed -e 's/\(.*\).o: /.\1.deps \1.o: /' > $@
 
 -include $(wildcard .*.deps)
-
-# malloc_stub.o: malloc_stub.c malloc_stub.h
-# 	$(CC) -c malloc_stub.c
 
 # seconde partie du sujet
 libmalloc.so: malloc_stub.o

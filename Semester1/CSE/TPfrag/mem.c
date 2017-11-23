@@ -1,13 +1,17 @@
 #include "mem.h"
 #include "common.h"
-#include <pthread.h>
 #include <assert.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+#include <stdint.h>
+#include <string.h>
 #include <sys/time.h>
-#include <math.h>
-#include <unistd.h>
+#include <stdio.h>
+
+
+#define BILLION 1000000000L
+static pthread_mutex_t verrou = PTHREAD_MUTEX_INITIALIZER;
 
 // constante définie dans gcc seulement
 #ifdef __BIGGEST_ALIGNMENT__
@@ -15,17 +19,15 @@
 #else
 #define ALIGNMENT 16UL
 #endif
-
-static __thread int fin_lib=0;
-
-#define dfprintf(args...) \
+static __thread int ain_lib=0;
+#define dprintf(args...) \
   do { \
-    if (!fin_lib) { \
-      fin_lib=1; \
+    if (!ain_lib) { \
+      ain_lib=1; \
       printf(args); \
-      fin_lib=0; \
+      ain_lib=0; \
     } \
-  } while (0)
+  } while(0)
 
 
 /* struct fb : décrit une zone de mémoire libre.
@@ -61,9 +63,6 @@ struct header {
 	mem_fit_function_t *fit;
 };
 
-
-pthread_mutex_t mutex;
-
 static struct header *header() {
 	return (struct header *) get_memory_adr();
 }
@@ -78,6 +77,7 @@ static void *first_bloc() {
 
 void mem_init(void* mem, size_t taille)
 {
+    pthread_mutex_lock (&verrou);
 	/* Interface obsolète remplacée par common.c */
 	assert(mem == get_memory_adr());
 	assert(taille == get_memory_size());
@@ -93,7 +93,10 @@ void mem_init(void* mem, size_t taille)
 	
 	/* Par défaut: fit first */
 	mem_fit(&first_fit);
-    pthread_mutex_init(&mutex, NULL);
+    //best_fit
+    //worst_fit
+    //first_fit
+    pthread_mutex_unlock (&verrou);
 }
 
 void mem_fit(mem_fit_function_t *f)
@@ -103,13 +106,15 @@ void mem_fit(mem_fit_function_t *f)
 
 void* mem_alloc(size_t taille)
 {
-    pthread_mutex_lock(&mutex);
-    // size_t taille_voulu = taille;
-
-	struct timeval timedebut;
-    if(gettimeofday(&timedebut, NULL) < 0){
-        printf("Erreur\n");
-    }
+    pthread_mutex_lock (&verrou);
+    size_t usertaille = taille;
+    /**********************************/
+    //struct timeval start, end;
+    //gettimeofday(&start, NULL);
+    uint64_t diff;
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    /**********************************/
 
 	/* Mise à jour de la taille */
 	/* On doit aussi stocker le descripteur */
@@ -152,26 +157,15 @@ void* mem_alloc(size_t taille)
 	}
 	/* On met à jour la liste des blocs libres */
 	prev->next = new_fb;
+    pthread_mutex_unlock (&verrou);
 
-	struct timeval timefin;
-    if(gettimeofday(&timefin, NULL) < 0){
-        printf("Erreur\n");
-    }
-
-    int secondes = timefin.tv_sec - timedebut.tv_sec;
-    int usecondes = timefin.tv_usec - timedebut.tv_usec;
-
-    int temps = secondes * pow(10, 6) + usecondes;
-
-    // write(2, &temps, sizeof(temps));
-
-    dfprintf("Temps allocation: %d\n", temps);
-    // fprintf(stderr, "Temps allocation: %d\n", temps);
-    // fprintf(stderr, "Taille voulu: %d\n", (int)taille_voulu);
-    // fprintf(stderr, "Taille réelement allouée: %d\n", (int)taille);
-
-
-	pthread_mutex_unlock(&mutex);
+    /**********************************/
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+	dprintf("mem_alloc@%lu;%lu;%llu@\n",(unsigned long) usertaille,(unsigned long) taille,(long long unsigned int) diff);//nanosec
+    //gettimeofday(&end, NULL);
+    //dprintf("__%ld__", ((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)));
+    /**********************************/
 	return new_db + 1;
 }
 
@@ -197,17 +191,16 @@ static struct db *get_db(void *adr) {
 
 void mem_free(void *mem)
 {
-	pthread_mutex_lock(&mutex);
-
-	struct timeval timedebut;
-    if(gettimeofday(&timedebut, NULL) < 0){
-        printf("Erreur\n");
-    }
-
 	if (mem == NULL) {
 		return;
 	}
+    /**********************************
+    uint64_t diff;
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    **********************************/
 
+    pthread_mutex_lock (&verrou);
 	/* On retrouve l'adresse du descripteur placé avant les données */
 	struct db *db = get_db(mem);
 
@@ -231,24 +224,13 @@ void mem_free(void *mem)
 	fb = merge_fbs(prev, fb);
 	/* A droite */
 	merge_fbs(fb, current);
+    pthread_mutex_unlock (&verrou);
 
-	struct timeval timefin;
-    if(gettimeofday(&timefin, NULL) < 0){
-        printf("Erreur\n");
-    }
-
-    int secondes = timefin.tv_sec - timedebut.tv_sec;
-    int usecondes = timefin.tv_usec - timedebut.tv_usec;
-    // printf("%d\n", (int)timedebut.tv_usec);
-
-    int temps = secondes * pow(10, 6) + usecondes;
-
-    // fprintf(stderr, "Temps libération: %d\n", temps);
-
-    dfprintf("Temps allocation: %d\n", temps);
-    // write(2, &temps, sizeof(temps));
-
-	pthread_mutex_unlock(&mutex);
+    /**********************************
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+	dprintf("mem_free@%lu;%llu@\n",(unsigned long) db->taille,(long long unsigned int) diff);//nanosec
+    **********************************/
 }
 
 void mem_show(void (*print)(void *, size_t, int))

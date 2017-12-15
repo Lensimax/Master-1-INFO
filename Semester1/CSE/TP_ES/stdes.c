@@ -1,11 +1,22 @@
 #include "stdes.h"
+#include <stdarg.h>
+#include <stdio.h>
 
 
+int mypow(int x, int n){
+	int res=1;
+	while(n>0){
+		n--;
+		res *= x;
+	}
+	return res;
+}
 
 FICHIER *ouvrir(char *nom, char mode){
 	FICHIER *file;
-	struct stat *infos;
+	//struct stat *infos;
 
+	file = malloc(sizeof(FICHIER));
 
 	// ouverture fichier
 	if(mode == 'L'){ // lecture
@@ -31,6 +42,7 @@ FICHIER *ouvrir(char *nom, char mode){
 
 	file->position = 0;
 	file->indice_buffer = 0;
+	file->nbRestant_buffer = 0;
 
 	file->buffer = malloc(BUFFER_SIZE);
 
@@ -41,6 +53,7 @@ FICHIER *ouvrir(char *nom, char mode){
 
 int fermer(FICHIER*f){
 	free(f->buffer);
+	free(f);
 	return close(f->fd);
 }
 
@@ -48,47 +61,207 @@ int fermer(FICHIER*f){
 
 int lire(void *p, unsigned int taille, unsigned int nbelem, FICHIER *f){
 	
-	int nbLu = 0;
-	int indice_buffer;
+	int nbOctetsLus = 0;
 	int n;
+	int octetsALire = taille * nbelem;
 
 	if(taille < 1 || nbelem < 1){
 		return -1;
 	}
 
-	p = malloc(taille * nbelem);
+	while(octetsALire - nbOctetsLus > 0){ // tant qu'il reste des choses à lire
 
-	while(nbelem - nbLu > 0){ // tant qu'il reste des choses à lire
-
-		if(f->indice_buffer >= BUFFER_SIZE){ // si on est a la fin du buffer
-			// remplir buffer
+		if(f->nbRestant_buffer == 0){ // le tampon est vide
+			// remplir tampon
 			errno = 0;
-			while((n = read(f->fd, &f->buffer, BUFFER_SIZE)) == 0 && errno != 0){
+			while((n = read(f->fd, (void *)f->buffer, BUFFER_SIZE)) == 0 && errno != 0){
 				errno = 0;
 			}
 
 			f->indice_buffer = 0;
-			f->position += n;
+			//f->position += n;
 			f->nbRestant_buffer = n;
 		} 
 
 		if(f->nbRestant_buffer <= 0){ // si on est a la fin du fichier
+
 			break;
+
 		} else { // on ecrit dans le tableau utilisateur
 
-			p[nbLu] = f->buffer[f->indice_buffer];
-			nbLu++;
-			f->indice_buffer++;
+			for(; f->nbRestant_buffer>0 && octetsALire>0 ; f->nbRestant_buffer--){
+
+				((char*)p)[nbOctetsLus] = f->buffer[f->indice_buffer];
+				nbOctetsLus++;
+				f->indice_buffer ++;
+				octetsALire--;
+
+			}
+
 		}
 
 	}
 
-	return nbLu; // renvoie du nombre de caractère lus
+	return nbOctetsLus/taille; // renvoie du nombre d' elements lus
 
 
 }
 
 
 int ecrire(const void *p, unsigned int taille, unsigned int nbelem, FICHIER *f){
-	return -1;
+
+	int nbOctetsEcrits = 0;
+	int octetsAEcrire = taille * nbelem;
+
+	if(taille < 1 || nbelem < 1){
+		return -1;
+	}
+
+	while(octetsAEcrire - nbOctetsEcrits > 0){ // tant qu'il reste des choses à écrire
+
+		if(f->nbRestant_buffer == 0){ // le tampon est vide
+			// remplir tampon
+			while(nbOctetsEcrits<octetsAEcrire && f->nbRestant_buffer<=BUFFER_SIZE){
+				f->buffer[f->nbRestant_buffer] = ((char*)p)[nbOctetsEcrits];
+				nbOctetsEcrits ++;
+				f->nbRestant_buffer ++;
+			}
+
+			
+		} 
+
+		if(f->nbRestant_buffer <= 0){ // si on est a la fin du fichier
+
+			break;
+
+		} else { // on ecrit dans le fichier
+
+			errno = 0;
+			while((write(f->fd, (void *)f->buffer, f->nbRestant_buffer)) == 0 && errno != 0){
+				errno = 0;
+			}
+			f->nbRestant_buffer = 0;
+
+		}
+
+	}
+
+	return nbOctetsEcrits/taille;
 }	
+
+
+int fliref(FICHIER *fp, char*format, ...){ // reprise du code du man.
+	va_list ap;
+	int *d;
+	char *c, **s;
+	char v;
+	int i, somme;
+	//int nbPatternsReconnus = 0;
+
+	va_start(ap, format);
+
+	while (*format){
+		switch (*format) {
+			case '%':
+				format ++;
+				switch (*format) {
+					case 's':              /* string sans espace*/
+						s = (char **) (va_arg(ap, char *));
+
+						i=0;
+						lire(&v, 1, 1, fp);
+						while(v != ' '){
+							*s[i]=v;
+							i++;
+							lire(&v, 1, 1, fp);
+						}
+						break;
+					case 'd':              /* int */
+						d = (int *) (va_arg(ap, char *));
+						i=0;
+						somme=0;
+						lire(&v, 1, 1, fp);
+						while(v >= '0' && v <= '9'){
+							somme = somme + (v-48 * mypow(10,i));
+							i++;
+							lire(&v, 1, 1, fp);
+						}
+						*d = somme;
+						break;
+					case 'c':              /* char */
+						/* need a cast here since va_arg only
+						takes fully promoted types */
+						c = (va_arg(ap, char *));
+						lire(c, 1, 1, fp);
+					break;
+				}
+				//printf("pourcent");
+				break;
+			default:
+				// printf("%c",*format);
+				lire(&v, 1, 1, fp);
+				if (v != *format)
+					return -1;//TODOOOOOOOOOOOOOOOOOOOOOOOOO
+				break;
+		}
+		format++;
+	}
+
+	va_end(ap);
+	return -1;
+}
+
+
+int fecriref(FICHIER *fp, char*format, ...){ // reprise du code du man.
+	va_list ap;
+	int d;
+	char c, *s;
+	int nbCharAffiches = 0;
+
+	va_start(ap, format);
+
+	while (*format){
+		switch (*format) {
+			case '%':
+				format ++;
+				switch (*format) {
+					case 's':              /* string */
+						s = va_arg(ap, char *);
+						while(*s){
+							ecrire(s, 1, 1, fp);
+							s++;
+							nbCharAffiches++;
+						}
+						// printf("%%string %s%%", s);
+						break;
+					case 'd':              /* int */
+						d = va_arg(ap, int);
+						// printf("%%int %d%%", d);
+						char str[BUFFER_SIZE];
+						int length = sprintf(str, "%d", d);
+						ecrire(&str, 1, length, fp);
+						nbCharAffiches += length;
+						break;
+					case 'c':              /* char */
+						/* need a cast here since va_arg only
+						takes fully promoted types */
+						c = (char) va_arg(ap, int);
+						// printf("%%char %c%%", c);
+						ecrire(&c, 1, 1, fp);
+						nbCharAffiches++;
+					break;
+				}
+				//printf("pourcent");
+				break;
+			default:
+				// printf("%c",*format);
+				ecrire(format, 1, 1, fp);
+				nbCharAffiches++;
+				break;
+		}
+		format++;
+	}
+
+	va_end(ap);
+	return nbCharAffiches;
+}

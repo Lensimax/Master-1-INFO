@@ -17,7 +17,7 @@ struct _ES_FICHIER {
 	int fd;
 
 	int position;
-	int indice buffer;
+	int indice_buffer;
 	int nbRestant_buffer; // nombre d'element encore a lire
 
 	char *buffer;
@@ -31,6 +31,8 @@ FICHIER *ouvrir(char *nom, char mode);
 int fermer(FICHIER*f);
 int lire(void *p, unsigned int taille, unsigned int nbelem, FICHIER *f);
 int ecrire(const void *p, unsigned int taille, unsigned int nbelem, FICHIER *f);
+int fecriref(FICHIER *fp, char*format, ...);
+int fliref(FICHIER *fp, char*format, ...);
 
 #endif
 

@@ -1,5 +1,5 @@
-EXEC=test test2
-LDFLAGS=-Wall -Werror -Wshadow -g
+EXEC= test test2
+LDFLAGS=-Wall -O0 -Werror -Wshadow -g
 LDLIBS=
 
 all: $(EXEC)

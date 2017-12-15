@@ -153,10 +153,11 @@ int ecrire(const void *p, unsigned int taille, unsigned int nbelem, FICHIER *f){
 int fliref(FICHIER *fp, char*format, ...){ // reprise du code du man.
 	va_list ap;
 	int *d;
-	char *c, **s;
+	char *c, *s;
 	char v;
 	int i, somme;
-	//int nbPatternsReconnus = 0;
+	int dejaLuCaractere = 0; // dejaLuCaractere>0 <=> on a deja lu un caractere sans l'"utiliser"
+	int nbPatternsReconnus = 0;
 
 	va_start(ap, format);
 
@@ -166,49 +167,74 @@ int fliref(FICHIER *fp, char*format, ...){ // reprise du code du man.
 				format ++;
 				switch (*format) {
 					case 's':              /* string sans espace*/
-						s = (char **) (va_arg(ap, char *));
-
-						i=0;
-						lire(&v, 1, 1, fp);
-						while(v != ' '){
-							*s[i]=v;
-							i++;
-							lire(&v, 1, 1, fp);
+						s = (va_arg(ap, char *));
+						if (!dejaLuCaractere){
+							if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus; //on lit, si il n'y a plus rien à lire on renvoie
 						}
+						else{
+							dejaLuCaractere--;
+						}
+						i=0;
+						while(v != ' '){
+							s[i]=v;
+							i++;
+							if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus;
+						}
+						dejaLuCaractere++; //on a lu un caractere en plus qu'on a pas utilisé
+						nbPatternsReconnus++;
 						break;
 					case 'd':              /* int */
 						d = (int *) (va_arg(ap, char *));
 						i=0;
 						somme=0;
-						lire(&v, 1, 1, fp);
+						if (!dejaLuCaractere){
+							if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus;
+						}
+						else{
+							dejaLuCaractere--;
+						}
 						while(v >= '0' && v <= '9'){
-							somme = somme + (v-48 * mypow(10,i));
+							somme = somme * mypow(10,i) + (v-48);
 							i++;
-							lire(&v, 1, 1, fp);
+							if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus;
 						}
 						*d = somme;
+						dejaLuCaractere++; //on a lu un caractere en plus qu'on a pas utilisé
+						nbPatternsReconnus++;
 						break;
 					case 'c':              /* char */
 						/* need a cast here since va_arg only
 						takes fully promoted types */
 						c = (va_arg(ap, char *));
-						lire(c, 1, 1, fp);
+						if (!dejaLuCaractere){
+							if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus;
+						}
+						else{
+							dejaLuCaractere--;
+						}
+						*c = v;
+						nbPatternsReconnus++;
 					break;
 				}
 				//printf("pourcent");
 				break;
 			default:
 				// printf("%c",*format);
-				lire(&v, 1, 1, fp);
+				if (!dejaLuCaractere){
+					if(!lire(&v, 1, 1, fp)) return nbPatternsReconnus;
+				}
+				else{
+					dejaLuCaractere--;
+				}
 				if (v != *format)
-					return -1;//TODOOOOOOOOOOOOOOOOOOOOOOOOO
+					return nbPatternsReconnus;//TODOOOOOOOOOOOOOOOOOOOOOOOOO
 				break;
 		}
 		format++;
 	}
 
 	va_end(ap);
-	return -1;
+	return nbPatternsReconnus;
 }
 
 

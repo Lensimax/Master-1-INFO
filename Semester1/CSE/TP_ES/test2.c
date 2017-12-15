@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	// }
 	char q = 'q';
 	int i = 0;
-	char s[10] = "anus";
+	char s[10] = "bonjour";
 	fliref(f1, "%do%co%s", &i, &q, &s);
 	fecriref(f2, "int %d string %s char %c\n", i, s, q);
 

@@ -150,6 +150,9 @@ int ecrire(const void *p, unsigned int taille, unsigned int nbelem, FICHIER *f){
 }	
 
 
+// si l'utilisateur rentre un chaine trop grande par rapport a la taille qu'il a alloué our ça chaine
+// il y a une erreur de segmentation (comme dans le vrai scanf("%s",s))
+
 int fliref(FICHIER *fp, char*format, ...){ // reprise du code du man.
 	va_list ap;
 	int *d;
@@ -264,7 +267,7 @@ int fecriref(FICHIER *fp, char*format, ...){ // reprise du code du man.
 						d = va_arg(ap, int);
 						// printf("%%int %d%%", d);
 						char str[BUFFER_SIZE];
-						int length = sprintf(str, "%d", d);
+						int length = sprintf(str, "%d", d); //  convertion int to String 
 						ecrire(&str, 1, length, fp);
 						nbCharAffiches += length;
 						break;

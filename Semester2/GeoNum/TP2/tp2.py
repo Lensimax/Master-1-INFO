@@ -119,7 +119,8 @@ def ComputeSplineC1( DataPts ) :
     y = (DataPts[0][1] + DataPts[1][1]) * 0.5
     # on peut changer le premier point intermediaire
     # ce qui change completement l'allure de la suite
-    BezierPts[1] = [1.2, 0] # b10
+    # BezierPts[1] = [1.2, 0] # b10
+    BezierPts[1] = [x, y]
 
     BezierPts[2] = [DataPts[1][0], DataPts[1][1]] # b01 <=> P1
 
@@ -181,6 +182,8 @@ def ComputeSplineC2( DataPts ) :
     ##  |  0   0   0   0   0   0   0   1  -2   1  |      : H - 2I + J = 0       [natural]
     ##
     
+
+
     ##
     ## TODO : Put DataPts to the first (n+1) rows of R.
     ##

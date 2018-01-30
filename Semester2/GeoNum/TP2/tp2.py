@@ -102,15 +102,39 @@ def ComputeSplineC1( DataPts ) :
     
     # input: DataPts = [P_0; P_1; ... ; P_n]
     n = DataPts.shape[0]-1
-    
+
     # BezierPts matrix will contain (2n+1) rows :
     #   n+1 rows for input data and n rows for inner Bezier control pts.
+
+
     BezierPts = np.zeros([2*n+1,2])
-    
-    ##
-    ## TODO : Compute BezierPts.
-    ##
-         
+
+    # calcul des points intermediaires pour chaque courbes de beziers
+
+    # calcul des premiers points un peu particulier 
+    BezierPts[0] = [DataPts[0][0], DataPts[0][1]] # b00 <=> P0
+
+
+    x = (DataPts[0][0] + DataPts[1][0]) * 0.5
+    y = (DataPts[0][1] + DataPts[1][1]) * 0.5
+    # on peut changer le premier point intermediaire
+    # ce qui change completement l'allure de la suite
+    BezierPts[1] = [1.2, 0] # b10
+
+    BezierPts[2] = [DataPts[1][0], DataPts[1][1]] # b01 <=> P1
+
+    # pour chaque courbe
+
+    for i in range(1, n) :
+
+        x = 2 * BezierPts[i*2][0] - BezierPts[i*2-1][0]
+        y = 2 * BezierPts[i*2][1] - BezierPts[i*2-1][1]
+        BezierPts[(i+1)*2-1] = [x, y] # b1i
+
+        BezierPts[(i+1)*2] = [DataPts[i+1][0], DataPts[i+1][1]] # Pi
+
+
+     
     return BezierPts
 
 
@@ -220,8 +244,10 @@ if __name__ == "__main__":
             ##
             
             pass
-            #CurvePts = BezierCurve( iBezierPts, density )
-            #plt.plot( CurvePts[:,0], CurvePts[:,1], '-', linewidth=3 )
+            # on calcule que pour le nombre de points dans la courbe (nb_points = deg+1)
+            CurvePts = BezierCurve( BezierPts[i*deg:(i+1)*deg+1], density )
+            # on affiche
+            plt.plot( CurvePts[:,0], CurvePts[:,1], '-', linewidth=3 )
 
 
         # plot the datapoints

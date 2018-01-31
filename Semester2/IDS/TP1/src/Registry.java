@@ -14,7 +14,7 @@ public class Registry implements Registry_itf{
     public String getPhone(String name){
         Person p = search(name);
         if (p != null){
-            return p.getName();
+            return p.getPhone();
         } else {
             return null;
         }
@@ -30,7 +30,7 @@ public class Registry implements Registry_itf{
 
     public Person search(String name){
         for(Person p: personList){
-            if (p.getName() == name){
+            if (p.getName().equals(name)){
                 return p;
             }
         }

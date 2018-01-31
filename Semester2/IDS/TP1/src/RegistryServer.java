@@ -31,10 +31,11 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.Iterator;
 
 public class RegistryServer {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Calculator calculator = new Calculator();
         if (args.length != 1) {
             System.err.println("Usage: java EchoServer <port number>");
@@ -63,7 +64,6 @@ public class RegistryServer {
                 if((inputLine = (String) objectInput.readObject()) != null){
                     typeCommand = inputLine;
 
-                    System.out.println("bonjour");
                     switch(typeCommand){
 
                     case "ajout":
@@ -83,14 +83,38 @@ public class RegistryServer {
                         } catch(Exception e){
                             System.err.println("Erreur lors de la reception de l'objet");
                         }
+                        // a enlever
                         System.out.println(registry);
 
                         break;
                     case "num":
+                            inputObject = objectInput.readObject();
+                            if(inputObject != null){
+                                String tel = registry.getPhone((String) inputObject);
+                                objectOutput.writeObject(tel);
+                            } else {
+                                objectOutput.writeObject(null);
+                            }
                         break;
-                    case "lister":
+                        case "lister":
+                            Iterator it = registry.getAll().iterator();
+
+                            while(it.hasNext()){
+                                objectOutput.writeObject(it.next());
+                            }
+
+                            /* fin du repertoire */
+                            objectOutput.writeObject(null);
                         break;
-                    case "pers":
+                        case "pers":
+                            inputObject = objectInput.readObject();
+                            if(inputObject != null){
+                                Person p = registry.search((String) inputObject);
+                                objectOutput.writeObject(p);
+                            } else {
+                                objectOutput.writeObject(null);
+                            }
+
                         break;
                     default:
                         objectInput.readUTF(); /* hardcore jusqu'a la mort :) */

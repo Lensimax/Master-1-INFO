@@ -33,7 +33,7 @@ import java.io.*;
 import java.net.*;
 
 public class RegistryClient {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
         if (args.length != 2) {
             System.err.println(
@@ -53,6 +53,7 @@ public class RegistryClient {
                 String userInput;
                 String typeOperation;
                 String name, phoneNumber;
+                Object inputObject;
                 while (true) {
                     System.out.println("Choisissez une opération:\n - ajout: ajouter personne \n - num: recuperer numero personne \n - lister: lister le repertoire\n - pers: recuperer une personne" );
                     if ((userInput = stdIn.readLine()) != null) {
@@ -91,14 +92,29 @@ public class RegistryClient {
                             break;
                         }
 
-                        objectOutput.writeChars(typeOperation);
+                        objectOutput.writeObject(typeOperation);
+                        objectOutput.writeObject(name);
 
-                        objectOutput.writeChars(name);
+                        inputObject = objectInput.readObject();
 
-                        System.out.println("Numéro de la personne "+name+":"+objectInput.readUTF());
+                        if(inputObject != null){
+
+                            System.out.println("Numéro de la personne "+name+": "+(String)inputObject);
+                        } else {
+
+                            System.out.println("Ce nom n'est pas présent dans le répertoire");
+                        }
 
                         break;
                     case "lister":
+
+                        objectOutput.writeObject(typeOperation);
+
+                        System.out.println("Répertoire:");
+                        while((inputObject = objectInput.readObject()) != null){
+                            System.out.println((Person)inputObject);
+                        }
+
                         break;
                     case "pers":
                         System.out.println("Entrez le nom de la personne");
@@ -108,12 +124,17 @@ public class RegistryClient {
                             break;
                         }
 
-                        objectOutput.writeChars(typeOperation);
-                        objectOutput.writeChars(name);
-                        try {
-                            System.out.println("Person: "+(Person)objectInput.readObject());
-                        } catch(Exception e){
-                            System.err.println("Erreur lors de la reception de l'objet");
+                        objectOutput.writeObject(typeOperation);
+                        objectOutput.writeObject(name);
+
+                        inputObject = objectInput.readObject();
+
+                        if(inputObject != null){
+
+                            System.out.println("Person: ("+(Person)inputObject+")");
+                        } else {
+
+                            System.out.println("Ce nom n'est pas présent dans le répertoire");
                         }
 
                         break;

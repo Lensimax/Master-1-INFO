@@ -1,3 +1,6 @@
 [submodule "Semester2/IDS"]
 	path = Semester2/IDS
 	url = git@github.com:TheSpyGeek/M1_IDS_TP.git
+[submodule "Semester2/GeoNum"]
+	path = Semester2/GeoNum
+	url = git@github.com:TheSpyGeek/M1_GeoNum.git

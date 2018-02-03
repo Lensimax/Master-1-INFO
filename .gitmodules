@@ -1,0 +1,3 @@
+[submodule "Semester2/M1_IDS_TP"]
+	path = Semester2/M1_IDS_TP
+	url = git@github.com:TheSpyGeek/M1_IDS_TP.git

@@ -7,3 +7,6 @@
 [submodule "Semester2/SI"]
 	path = Semester2/SI
 	url = git@github.com:TheSpyGeek/M1_SI.git
+[submodule "Semester2/DevOps"]
+	path = Semester2/DevOps
+	url = git@github.com:TheSpyGeek/M1_DevOps.git
